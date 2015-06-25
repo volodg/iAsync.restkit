@@ -119,7 +119,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result>(args: JSmartDataLoader
     return bindSequenceOfAsyncs(cachedDataLoader, analyzer)
 }
 
-internal class JErrorNoFreshData : Error {
+internal class ErrorNoFreshData : Error {
     
     let cachedData: JRestKitCachedData!
     
@@ -160,7 +160,7 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
             case let .Failure(error):
                 //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
                 if !doesNotIgnoreFreshDataLoadFail {
-                    if let noFreshDataError = bindError as? JErrorNoFreshData {
+                    if let noFreshDataError = bindError as? ErrorNoFreshData {
                     
                         let newResult = JResponseDataWithUpdateData(
                             data: noFreshDataError.cachedData.data,
@@ -191,7 +191,7 @@ private func loadFreshCachedDataWithUpdateDate(
             return asyncWithResult(cachedData)
         }
         
-        let error = JErrorNoFreshData(cachedData: cachedData)
+        let error = ErrorNoFreshData(cachedData: cachedData)
         return asyncWithError(error)
     }
     
