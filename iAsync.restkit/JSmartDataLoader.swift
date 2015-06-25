@@ -8,8 +8,10 @@
 
 import Foundation
 
-import JAsync
-import JUtils
+import iAsync_async
+import iAsync_utils
+
+import Result
 
 extension NSObject {
     
@@ -117,7 +119,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result>(args: JSmartDataLoader
     return bindSequenceOfAsyncs(cachedDataLoader, analyzer)
 }
 
-internal class JErrorNoFreshData : JError {
+internal class JErrorNoFreshData : Error {
     
     let cachedData: JRestKitCachedData!
     
@@ -148,14 +150,14 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
 {
     return { (bindError: NSError) -> JAsyncTypes<JRestKitCachedData>.JAsync in
         
-        let finishCallbackHook = { (result: JResult<NSData>, doneCallback: JAsyncTypes<JRestKitCachedData>.JDidFinishAsyncCallback?) -> () in
+        let finishCallbackHook = { (result: Result<NSData, NSError>, doneCallback: JAsyncTypes<JRestKitCachedData>.JDidFinishAsyncCallback?) -> () in
             
             switch result {
-            case let .Value(v):
+            case let .Success(v):
                 //logs [ srvResponse_ logResponse ];
                 let newResult = JResponseDataWithUpdateData(data: v.value, updateDate: nil)
-                doneCallback?(result: JResult.value(newResult))
-            case let .Error(error):
+                doneCallback?(result: Result.success(newResult))
+            case let .Failure(error):
                 //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
                 if !doesNotIgnoreFreshDataLoadFail {
                     if let noFreshDataError = bindError as? JErrorNoFreshData {
@@ -164,12 +166,12 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
                             data: noFreshDataError.cachedData.data,
                             updateDate: noFreshDataError.cachedData.updateDate)
                     
-                        doneCallback?(result: JResult.value(newResult))
+                        doneCallback?(result: Result.success(newResult))
                         return
                     }
                 }
                 
-                doneCallback?(result: JResult.error(error))
+                doneCallback?(result: Result.failure(error.value))
             }
         }
         let dataLoader = dataLoaderForIdentifier(loadDataIdentifier)

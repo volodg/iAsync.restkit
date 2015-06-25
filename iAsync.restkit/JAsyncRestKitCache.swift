@@ -8,7 +8,7 @@
 
 import Foundation
 
-import JAsync
+import iAsync_async
 
 public protocol JAsyncRestKitCache {
     

@@ -11,6 +11,10 @@
 		4C63C72F1B3C77E8003984DE /* iAsync.restkit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C63C72E1B3C77E8003984DE /* iAsync.restkit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C63C7351B3C77E8003984DE /* iAsync_restkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C63C7291B3C77E8003984DE /* iAsync_restkit.framework */; };
 		4C63C73C1B3C77E8003984DE /* iAsync_restkitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C73B1B3C77E8003984DE /* iAsync_restkitTests.swift */; };
+		4C63C74A1B3C7A55003984DE /* JResponseDataWithUpdateData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7461B3C7A55003984DE /* JResponseDataWithUpdateData.swift */; };
+		4C63C74B1B3C7A55003984DE /* JRestKitCachedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7471B3C7A55003984DE /* JRestKitCachedData.swift */; };
+		4C63C74C1B3C7A55003984DE /* JAsyncRestKitCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7481B3C7A55003984DE /* JAsyncRestKitCache.swift */; };
+		4C63C74D1B3C7A55003984DE /* JSmartDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7491B3C7A55003984DE /* JSmartDataLoader.swift */; };
 		BFCD747B7DCFB033E42780EF /* Pods_iAsync_restkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2D70A59EFCB901E90DD7BE8 /* Pods_iAsync_restkit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -34,6 +38,10 @@
 		4C63C7341B3C77E8003984DE /* iAsync.restkitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iAsync.restkitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C63C73A1B3C77E8003984DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C63C73B1B3C77E8003984DE /* iAsync_restkitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iAsync_restkitTests.swift; sourceTree = "<group>"; };
+		4C63C7461B3C7A55003984DE /* JResponseDataWithUpdateData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JResponseDataWithUpdateData.swift; sourceTree = "<group>"; };
+		4C63C7471B3C7A55003984DE /* JRestKitCachedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JRestKitCachedData.swift; sourceTree = "<group>"; };
+		4C63C7481B3C7A55003984DE /* JAsyncRestKitCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JAsyncRestKitCache.swift; sourceTree = "<group>"; };
+		4C63C7491B3C7A55003984DE /* JSmartDataLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSmartDataLoader.swift; sourceTree = "<group>"; };
 		8B41B392BB2523DB24BE1617 /* Pods-iAsync.restkitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests.release.xcconfig"; sourceTree = "<group>"; };
 		9A160F42017E51BD1C55D4CA /* Pods_iAsync_restkitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iAsync_restkitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2D70A59EFCB901E90DD7BE8 /* Pods_iAsync_restkit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iAsync_restkit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +91,9 @@
 		4C63C72B1B3C77E8003984DE /* iAsync.restkit */ = {
 			isa = PBXGroup;
 			children = (
+				4C63C7451B3C7A55003984DE /* Data */,
+				4C63C7481B3C7A55003984DE /* JAsyncRestKitCache.swift */,
+				4C63C7491B3C7A55003984DE /* JSmartDataLoader.swift */,
 				4C63C72E1B3C77E8003984DE /* iAsync.restkit.h */,
 				4C63C72C1B3C77E8003984DE /* Supporting Files */,
 			);
@@ -112,6 +123,15 @@
 				4C63C73A1B3C77E8003984DE /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4C63C7451B3C7A55003984DE /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				4C63C7461B3C7A55003984DE /* JResponseDataWithUpdateData.swift */,
+				4C63C7471B3C7A55003984DE /* JRestKitCachedData.swift */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		75D5D950EBFB650BB0021019 /* Pods */ = {
@@ -324,6 +344,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C63C74C1B3C7A55003984DE /* JAsyncRestKitCache.swift in Sources */,
+				4C63C74A1B3C7A55003984DE /* JResponseDataWithUpdateData.swift in Sources */,
+				4C63C74B1B3C7A55003984DE /* JRestKitCachedData.swift in Sources */,
+				4C63C74D1B3C7A55003984DE /* JSmartDataLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
