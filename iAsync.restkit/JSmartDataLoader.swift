@@ -80,13 +80,13 @@ public func jSmartDataLoaderWithCache<Identifier, Result>(args: JSmartDataLoader
         
         let loadCachedData = loadFreshCachedDataWithUpdateDate(
             key,
-            cache.cachedDataLoaderForKey(key),
-            cacheDataLifeTimeInSeconds)
+            cachedDataLoader          : cache.cachedDataLoaderForKey(key),
+            cacheDataLifeTimeInSeconds: cacheDataLifeTimeInSeconds)
         
         let dataLoaderBinder = dataLoaderWithCachedResultBinder(
             doesNotIgnoreFreshDataLoadFail,
-            dataLoaderForIdentifier,
-            loadDataIdentifier)
+            dataLoaderForIdentifier: dataLoaderForIdentifier,
+            loadDataIdentifier     : loadDataIdentifier)
         
         let loader = bindTrySequenceOfAsyncs(loadCachedData, dataLoaderBinder)
         
@@ -104,7 +104,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result>(args: JSmartDataLoader
         
         let cacheBinder = { (analyzedData: Result) -> JAsyncTypes<Result>.JAsync in
             
-            let resultLoader = asyncWithResult(analyzedData)
+            let resultLoader = async(result: analyzedData)
             
             if response.updateDate == nil {
                 let loader = cache.loaderToSetData(response.data, forKey:key)
@@ -139,7 +139,7 @@ internal class ErrorNoFreshData : Error {
     
     override func copyWithZone(zone: NSZone) -> AnyObject {
         
-        return self.dynamicType(cachedData: cachedData)
+        return self.dynamicType.init(cachedData: cachedData)
     }
 }
 
@@ -153,9 +153,9 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
         let finishCallbackHook = { (result: Result<NSData, NSError>, doneCallback: JAsyncTypes<JRestKitCachedData>.JDidFinishAsyncCallback?) -> () in
             
             switch result {
-            case let .Success(v):
+            case let .Success(value):
                 //logs [ srvResponse_ logResponse ];
-                let newResult = JResponseDataWithUpdateData(data: v.value, updateDate: nil)
+                let newResult = JResponseDataWithUpdateData(data: value, updateDate: nil)
                 doneCallback?(result: Result.success(newResult))
             case let .Failure(error):
                 //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
@@ -171,11 +171,11 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
                     }
                 }
                 
-                doneCallback?(result: Result.failure(error.value))
+                doneCallback?(result: Result.failure(error))
             }
         }
         let dataLoader = dataLoaderForIdentifier(loadDataIdentifier)
-        return asyncWithFinishHookBlock(dataLoader, finishCallbackHook)
+        return asyncWithFinishHookBlock(dataLoader, finishCallbackHook: finishCallbackHook)
     }
 }
 
@@ -188,11 +188,11 @@ private func loadFreshCachedDataWithUpdateDate(
         
         let newDate = cachedData.updateDate?.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
         if newDate!.compare(NSDate()) == NSComparisonResult.OrderedDescending {
-            return asyncWithResult(cachedData)
+            return async(result: cachedData)
         }
         
         let error = ErrorNoFreshData(cachedData: cachedData)
-        return asyncWithError(error)
+        return async(error: error)
     }
     
     return bindSequenceOfAsyncs(cachedDataLoader, validateByDateResultBinder)
