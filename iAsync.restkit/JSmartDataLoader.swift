@@ -75,8 +75,8 @@ public func jSmartDataLoaderWithCache<Identifier, Result>(args: JSmartDataLoader
     let key = cacheKeyForIdentifier(loadDataIdentifier: loadDataIdentifier)
     
     let cachedDataLoader = { (progressCallback: JAsyncProgressCallback?,
-                              stateCallback: JAsyncChangeStateCallback?,
-                              finishCallback: JAsyncTypes<JRestKitCachedData>.JDidFinishAsyncCallback?) -> JAsyncHandler in
+                              stateCallback   : JAsyncChangeStateCallback?,
+                              finishCallback  : JAsyncTypes<JRestKitCachedData>.JDidFinishAsyncCallback?) -> JAsyncHandler in
         
         let loadCachedData = loadFreshCachedDataWithUpdateDate(
             key,
@@ -92,8 +92,8 @@ public func jSmartDataLoaderWithCache<Identifier, Result>(args: JSmartDataLoader
         
         return loader(
             progressCallback: progressCallback,
-            stateCallback: stateCallback,
-            finishCallback: finishCallback)
+            stateCallback   : stateCallback,
+            finishCallback  : finishCallback)
     }
     
     let analyzer = { (response: JRestKitCachedData) -> JAsyncTypes<Result>.JAsync in
