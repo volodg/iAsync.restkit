@@ -12,7 +12,7 @@ import iAsync_async
 
 public protocol JAsyncRestKitCache {
     
-    func loaderToSetData(data: NSData, forKey key: String) -> JAsyncTypes<NSNull, NSError>.JAsync
+    func loaderToSetData(data: NSData, forKey key: String) -> AsyncTypes<NSNull, NSError>.Async
     
-    func cachedDataLoaderForKey(key: String) -> JAsyncTypes<JRestKitCachedData, NSError>.JAsync
+    func cachedDataLoaderForKey(key: String) -> AsyncTypes<JRestKitCachedData, NSError>.Async
 }
