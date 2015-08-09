@@ -102,7 +102,7 @@ public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataL
         
         let cacheBinder = { (analyzedData: AsyncResult) -> AsyncTypes<AsyncResult, NSError>.Async in
             
-            let resultLoader: AsyncTypes<AsyncResult, NSError>.Async = asyncWithResult(analyzedData)
+            let resultLoader: AsyncTypes<AsyncResult, NSError>.Async = asyncWithValue(analyzedData)
             
             if response.updateDate == nil {
                 let loader = cache.loaderToSetData(response.data, forKey:key)
@@ -190,7 +190,7 @@ private func loadFreshCachedDataWithUpdateDate(
         
         let newDate = cachedData.updateDate?.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
         if newDate!.compare(NSDate()) == NSComparisonResult.OrderedDescending {
-            return asyncWithResult(cachedData)
+            return asyncWithValue(cachedData)
         }
         
         let error = ErrorNoFreshData(cachedData: cachedData)
