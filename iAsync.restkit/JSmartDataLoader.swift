@@ -30,11 +30,11 @@ extension NSData {
 
 public class JSmartDataLoaderFields<Identifier, AsyncResult> {
     
-    public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> JAsyncTypes2<NSData, AsyncResult, NSError>.JAsyncBinder
+    public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<NSData, AsyncResult, NSError>.JAsyncBinder
     public typealias JCacheKeyForIdentifier    = (loadDataIdentifier: Identifier) -> String
     
     let loadDataIdentifier: Identifier
-    let dataLoaderForIdentifier: JAsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder
+    let dataLoaderForIdentifier: AsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder
     let analyzerForData: JAsyncBinderForIdentifier
     let cacheKeyForIdentifier: JCacheKeyForIdentifier
     let doesNotIgnoreFreshDataLoadFail: Bool
@@ -43,7 +43,7 @@ public class JSmartDataLoaderFields<Identifier, AsyncResult> {
     
     public init(
         loadDataIdentifier: Identifier,
-        dataLoaderForIdentifier: JAsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder,
+        dataLoaderForIdentifier: AsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder,
         analyzerForData: JAsyncBinderForIdentifier,
         cacheKeyForIdentifier: JCacheKeyForIdentifier,
         doesNotIgnoreFreshDataLoadFail: Bool,
@@ -60,7 +60,7 @@ public class JSmartDataLoaderFields<Identifier, AsyncResult> {
     }
 }
 
-public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataLoaderFields<Identifier, AsyncResult>) -> JAsyncTypes<AsyncResult, NSError>.JAsync {
+public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataLoaderFields<Identifier, AsyncResult>) -> AsyncTypes<AsyncResult, NSError>.Async {
     
     let loadDataIdentifier             = args.loadDataIdentifier
     let dataLoaderForIdentifier        = args.dataLoaderForIdentifier
@@ -72,9 +72,9 @@ public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataL
     
     let key = cacheKeyForIdentifier(loadDataIdentifier: loadDataIdentifier)
     
-    let cachedDataLoader = { (progressCallback: JAsyncProgressCallback?,
-                              stateCallback   : JAsyncChangeStateCallback?,
-                              finishCallback  : JAsyncTypes<JRestKitCachedData, NSError>.JDidFinishAsyncCallback?) -> JAsyncHandler in
+    let cachedDataLoader = { (progressCallback: AsyncProgressCallback?,
+                              stateCallback   : AsyncChangeStateCallback?,
+                              finishCallback  : AsyncTypes<JRestKitCachedData, NSError>.JDidFinishAsyncCallback?) -> JAsyncHandler in
         
         let loadCachedData = loadFreshCachedDataWithUpdateDate(
             key,
@@ -94,15 +94,15 @@ public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataL
             finishCallback  : finishCallback)
     }
     
-    let analyzer = { (response: JRestKitCachedData) -> JAsyncTypes<AsyncResult, NSError>.JAsync in
+    let analyzer = { (response: JRestKitCachedData) -> AsyncTypes<AsyncResult, NSError>.Async in
         
         let binder = analyzerForData(loadDataIdentifier: loadDataIdentifier)
         
         let analyzer = binder(response.data)
         
-        let cacheBinder = { (analyzedData: AsyncResult) -> JAsyncTypes<AsyncResult, NSError>.JAsync in
+        let cacheBinder = { (analyzedData: AsyncResult) -> AsyncTypes<AsyncResult, NSError>.Async in
             
-            let resultLoader: JAsyncTypes<AsyncResult, NSError>.JAsync = async(value: analyzedData)
+            let resultLoader: AsyncTypes<AsyncResult, NSError>.Async = async(value: analyzedData)
             
             if response.updateDate == nil {
                 let loader = cache.loaderToSetData(response.data, forKey:key)
@@ -143,12 +143,12 @@ internal class ErrorNoFreshData : Error {
 
 private func dataLoaderWithCachedResultBinder<Identifier>(
     doesNotIgnoreFreshDataLoadFail: Bool,
-    dataLoaderForIdentifier: JAsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder,
-    loadDataIdentifier: Identifier) -> JAsyncTypes2<NSError, JRestKitCachedData, NSError>.JAsyncBinder
+    dataLoaderForIdentifier: AsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder,
+    loadDataIdentifier: Identifier) -> AsyncTypes2<NSError, JRestKitCachedData, NSError>.JAsyncBinder
 {
-    return { (bindError: NSError) -> JAsyncTypes<JRestKitCachedData, NSError>.JAsync in
+    return { (bindError: NSError) -> AsyncTypes<JRestKitCachedData, NSError>.Async in
         
-        let finishCallbackHook = { (result: AsyncResult<NSData, NSError>, doneCallback: JAsyncTypes<JRestKitCachedData, NSError>.JDidFinishAsyncCallback?) -> () in
+        let finishCallbackHook = { (result: AsyncResult<NSData, NSError>, doneCallback: AsyncTypes<JRestKitCachedData, NSError>.JDidFinishAsyncCallback?) -> () in
             
             switch result {
             case let .Success(value):
@@ -183,10 +183,10 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
 
 private func loadFreshCachedDataWithUpdateDate(
     key: String,
-    cachedDataLoader: JAsyncTypes<JRestKitCachedData, NSError>.JAsync,
-    cacheDataLifeTimeInSeconds: NSTimeInterval) -> JAsyncTypes<JRestKitCachedData, NSError>.JAsync
+    cachedDataLoader: AsyncTypes<JRestKitCachedData, NSError>.Async,
+    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<JRestKitCachedData, NSError>.Async
 {
-    let validateByDateResultBinder = { (cachedData: JRestKitCachedData) -> JAsyncTypes<JRestKitCachedData, NSError>.JAsync in
+    let validateByDateResultBinder = { (cachedData: JRestKitCachedData) -> AsyncTypes<JRestKitCachedData, NSError>.Async in
         
         let newDate = cachedData.updateDate?.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
         if newDate!.compare(NSDate()) == NSComparisonResult.OrderedDescending {
