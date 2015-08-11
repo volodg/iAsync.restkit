@@ -28,26 +28,32 @@ extension NSData {
     }
 }
 
-public class JSmartDataLoaderFields<Identifier, AsyncResult> {
+public enum DataRequestContext<DataLoadContext> {
     
-    public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<NSData, AsyncResult, NSError>.JAsyncBinder
+    case Outside(DataLoadContext)
+    case CacheUpdateDate(NSDate)
+}
+
+public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
+    
+    public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<(DataRequestContext<DataLoadContext>, NSData), Result, NSError>.JAsyncBinder
     public typealias JCacheKeyForIdentifier    = (loadDataIdentifier: Identifier) -> String
     
-    let loadDataIdentifier: Identifier
-    let dataLoaderForIdentifier: AsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder
-    let analyzerForData: JAsyncBinderForIdentifier
-    let cacheKeyForIdentifier: JCacheKeyForIdentifier
+    let loadDataIdentifier            : Identifier
+    let dataLoaderForIdentifier       : AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.JAsyncBinder
+    let analyzerForData               : JAsyncBinderForIdentifier
+    let cacheKeyForIdentifier         : JCacheKeyForIdentifier
     let doesNotIgnoreFreshDataLoadFail: Bool
-    let cache: JAsyncRestKitCache
-    let cacheDataLifeTimeInSeconds: NSTimeInterval
+    let cache                         : JAsyncRestKitCache
+    let cacheDataLifeTimeInSeconds    : NSTimeInterval
     
     public init(
-        loadDataIdentifier: Identifier,
-        dataLoaderForIdentifier: AsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder,
-        analyzerForData: JAsyncBinderForIdentifier,
-        cacheKeyForIdentifier: JCacheKeyForIdentifier,
+        loadDataIdentifier     : Identifier,
+        dataLoaderForIdentifier: AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.JAsyncBinder,
+        analyzerForData        : JAsyncBinderForIdentifier,
+        cacheKeyForIdentifier  : JCacheKeyForIdentifier,
         doesNotIgnoreFreshDataLoadFail: Bool,
-        cache: JAsyncRestKitCache,
+        cache                  : JAsyncRestKitCache,
         cacheDataLifeTimeInSeconds: NSTimeInterval)
     {
         self.loadDataIdentifier             = loadDataIdentifier
@@ -60,7 +66,7 @@ public class JSmartDataLoaderFields<Identifier, AsyncResult> {
     }
 }
 
-public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataLoaderFields<Identifier, AsyncResult>) -> AsyncTypes<AsyncResult, NSError>.Async {
+public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: JSmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncTypes<Result, NSError>.Async {
     
     let loadDataIdentifier             = args.loadDataIdentifier
     let dataLoaderForIdentifier        = args.dataLoaderForIdentifier
@@ -74,9 +80,9 @@ public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataL
     
     let cachedDataLoader = { (progressCallback: AsyncProgressCallback?,
                               stateCallback   : AsyncChangeStateCallback?,
-                              finishCallback  : AsyncTypes<JRestKitCachedData, NSError>.JDidFinishAsyncCallback?) -> JAsyncHandler in
+                              finishCallback  : AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.JDidFinishAsyncCallback?) -> JAsyncHandler in
         
-        let loadCachedData = loadFreshCachedDataWithUpdateDate(
+        let loadCachedData: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async = loadFreshCachedDataWithUpdateDate(
             key,
             cachedDataLoader          : cache.cachedDataLoaderForKey(key),
             cacheDataLifeTimeInSeconds: cacheDataLifeTimeInSeconds)
@@ -94,21 +100,23 @@ public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataL
             finishCallback  : finishCallback)
     }
     
-    let analyzer = { (response: JRestKitCachedData) -> AsyncTypes<AsyncResult, NSError>.Async in
+    let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncTypes<Result, NSError>.Async in
         
         let binder = analyzerForData(loadDataIdentifier: loadDataIdentifier)
         
-        let analyzer = binder(response.data)
+        let analyzer = binder(response)
         
-        let cacheBinder = { (analyzedData: AsyncResult) -> AsyncTypes<AsyncResult, NSError>.Async in
+        let cacheBinder = { (analyzedData: Result) -> AsyncTypes<Result, NSError>.Async in
             
-            let resultLoader: AsyncTypes<AsyncResult, NSError>.Async = async(value: analyzedData)
+            let resultLoader: AsyncTypes<Result, NSError>.Async = async(value: analyzedData)
             
-            if response.updateDate == nil {
-                let loader = cache.loaderToSetData(response.data, forKey:key)
+            switch response.0 {
+            case .Outside:
+                let loader = cache.loaderToSetData(response.1, forKey:key)
                 return sequenceOfAsyncs(loader, resultLoader)
+            case .CacheUpdateDate:
+                return resultLoader
             }
-            return resultLoader
         }
         
         return bindSequenceOfAsyncs(analyzer, cacheBinder)
@@ -119,51 +127,45 @@ public func jSmartDataLoaderWithCache<Identifier, AsyncResult>(args: JSmartDataL
 
 internal class ErrorNoFreshData : Error {
     
-    let cachedData: JRestKitCachedData!
+    let cachedData: (NSDate, NSData)
     
     override class func jffErrorsDomain() -> String {
         return "com.just_for_fun.rest_kit_internal.library"
     }
     
-    required init(cachedData: JRestKitCachedData) {
+    required init(cachedData: (NSDate, NSData)) {
         
         self.cachedData = cachedData
         super.init(description: "internal logic error (no fresh data)")
     }
-
+    
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func copyWithZone(zone: NSZone) -> AnyObject {
-        
-        return self.dynamicType.init(cachedData: cachedData)
-    }
 }
 
-private func dataLoaderWithCachedResultBinder<Identifier>(
+private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
     doesNotIgnoreFreshDataLoadFail: Bool,
-    dataLoaderForIdentifier: AsyncTypes2<Identifier, NSData, NSError>.JAsyncBinder,
-    loadDataIdentifier: Identifier) -> AsyncTypes2<NSError, JRestKitCachedData, NSError>.JAsyncBinder
+    dataLoaderForIdentifier       : AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.JAsyncBinder,
+    loadDataIdentifier            : Identifier) -> AsyncTypes2<NSError, (DataRequestContext<DataLoadContext>, NSData), NSError>.JAsyncBinder
 {
-    return { (bindError: NSError) -> AsyncTypes<JRestKitCachedData, NSError>.Async in
+    return { (bindError: NSError) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
         
-        let finishCallbackHook = { (result: AsyncResult<NSData, NSError>, doneCallback: AsyncTypes<JRestKitCachedData, NSError>.JDidFinishAsyncCallback?) -> () in
+        let finishCallbackHook = { (result: AsyncResult<(DataLoadContext, NSData), NSError>, doneCallback: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.JDidFinishAsyncCallback?) -> () in
             
             switch result {
             case let .Success(value):
                 //logs [ srvResponse_ logResponse ];
-                let newResult = JResponseDataWithUpdateData(data: value, updateDate: nil)
+                let newResult = (DataRequestContext<DataLoadContext>.Outside(value.0), value.1)
+                
                 doneCallback?(result: AsyncResult.success(newResult))
             case let .Failure(error):
                 //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
                 if !doesNotIgnoreFreshDataLoadFail {
                     if let noFreshDataError = bindError as? ErrorNoFreshData {
                     
-                        let newResult = JResponseDataWithUpdateData(
-                            data: noFreshDataError.cachedData.data,
-                            updateDate: noFreshDataError.cachedData.updateDate)
-                    
+                        let newResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(noFreshDataError.cachedData.0), noFreshDataError.cachedData.1)
+                        
                         doneCallback?(result: AsyncResult.success(newResult))
                         return
                     }
@@ -181,16 +183,18 @@ private func dataLoaderWithCachedResultBinder<Identifier>(
     }
 }
 
-private func loadFreshCachedDataWithUpdateDate(
+private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
     key: String,
-    cachedDataLoader: AsyncTypes<JRestKitCachedData, NSError>.Async,
-    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<JRestKitCachedData, NSError>.Async
+    cachedDataLoader: AsyncTypes<(NSDate, NSData), NSError>.Async,
+    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async
 {
-    let validateByDateResultBinder = { (cachedData: JRestKitCachedData) -> AsyncTypes<JRestKitCachedData, NSError>.Async in
+    let validateByDateResultBinder = { (cachedData: (NSDate, NSData)) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
         
-        let newDate = cachedData.updateDate?.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
-        if newDate!.compare(NSDate()) == NSComparisonResult.OrderedDescending {
-            return async(value: cachedData)
+        let newDate = cachedData.0.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
+        if newDate.compare(NSDate()) == NSComparisonResult.OrderedDescending {
+            
+            let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
+            return async(value: cachedResult)
         }
         
         let error = ErrorNoFreshData(cachedData: cachedData)
