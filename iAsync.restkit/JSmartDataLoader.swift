@@ -82,7 +82,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
     
     let cachedDataLoader = { (progressCallback: AsyncProgressCallback?,
                               stateCallback   : AsyncChangeStateCallback?,
-                              finishCallback  : AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.JDidFinishAsyncCallback?) -> JAsyncHandler in
+                              finishCallback  : AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.DidFinishAsyncCallback?) -> JAsyncHandler in
         
         let loadCachedData: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async = loadFreshCachedDataWithUpdateDate(
             key,
@@ -153,7 +153,7 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
 {
     return { (bindError: NSError) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
         
-        let finishCallbackHook = { (result: AsyncResult<(DataLoadContext, NSData), NSError>, doneCallback: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.JDidFinishAsyncCallback?) -> () in
+        let finishCallbackHook = { (result: AsyncResult<(DataLoadContext, NSData), NSError>, doneCallback: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.DidFinishAsyncCallback?) -> () in
             
             switch result {
             case let .Success(v):
