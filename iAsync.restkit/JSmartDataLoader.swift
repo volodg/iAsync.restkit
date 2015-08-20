@@ -38,11 +38,11 @@ public enum DataRequestContext<DataLoadContext> {
 
 public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     
-    public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<(DataRequestContext<DataLoadContext>, NSData), Result, NSError>.JAsyncBinder
+    public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<(DataRequestContext<DataLoadContext>, NSData), Result, NSError>.AsyncBinder
     public typealias JCacheKeyForIdentifier    = (loadDataIdentifier: Identifier) -> String
     
     let loadDataIdentifier        : Identifier
-    let dataLoaderForIdentifier   : AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.JAsyncBinder
+    let dataLoaderForIdentifier   : AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.AsyncBinder
     let analyzerForData           : JAsyncBinderForIdentifier
     let cacheKeyForIdentifier     : JCacheKeyForIdentifier
     let ignoreFreshDataLoadFail   : Bool
@@ -51,7 +51,7 @@ public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     
     public init(
         loadDataIdentifier        : Identifier,
-        dataLoaderForIdentifier   : AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.JAsyncBinder,
+        dataLoaderForIdentifier   : AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.AsyncBinder,
         analyzerForData           : JAsyncBinderForIdentifier,
         cacheKeyForIdentifier     : JCacheKeyForIdentifier,
         ignoreFreshDataLoadFail   : Bool,
@@ -148,8 +148,8 @@ internal class ErrorNoFreshData : Error {
 
 private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
     ignoreFreshDataLoadFail: Bool,
-    dataLoaderForIdentifier: AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.JAsyncBinder,
-    loadDataIdentifier     : Identifier) -> AsyncTypes2<NSError, (DataRequestContext<DataLoadContext>, NSData), NSError>.JAsyncBinder
+    dataLoaderForIdentifier: AsyncTypes2<Identifier, (DataLoadContext, NSData), NSError>.AsyncBinder,
+    loadDataIdentifier     : Identifier) -> AsyncTypes2<NSError, (DataRequestContext<DataLoadContext>, NSData), NSError>.AsyncBinder
 {
     return { (bindError: NSError) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
         
