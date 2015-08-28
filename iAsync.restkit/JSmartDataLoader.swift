@@ -129,7 +129,7 @@ internal class ErrorNoFreshData : Error {
     
     let cachedData: (NSDate, NSData)
     
-    override class func jffErrorsDomain() -> String {
+    override class func iAsyncErrorsDomain() -> String {
         return "com.just_for_fun.rest_kit_internal.library"
     }
     
