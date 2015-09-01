@@ -14,12 +14,12 @@ public class ParseJsonDataError : Error
 {
     let data     : NSData
     let jsonError: NSError
-    let context  : Printable
+    let context  : CustomStringConvertible
     
     required public init(
         data     : NSData,
         jsonError: NSError,
-        context  : Printable)
+        context  : CustomStringConvertible)
     {
         self.data      = data
         self.jsonError = jsonError
