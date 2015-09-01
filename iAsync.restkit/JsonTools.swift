@@ -13,22 +13,20 @@ import iAsync_utils
 
 public struct JsonTools {
     
-    public static func jsonLoader(data: NSData, context: Printable) -> AsyncTypes<AnyObject, NSError>.Async {
+    public static func jsonLoader(data: NSData, context: CustomStringConvertible) -> AsyncTypes<AnyObject, NSError>.Async {
         
-        return asyncWithSyncOperation({ () -> AsyncResult<AnyObject, NSError> in
+        return async(job: { () -> AsyncResult<AnyObject, NSError> in
             
-            var error: NSError?
-            
-            let jsonObj: AnyObject! = NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments, error: &error)
-            //println("error: \(error)")
-            
-            if let error = error {
+            do {
+                let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
+                return AsyncResult.success(jsonObj)
+            } catch let error as NSError {
                 
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context)
                 return AsyncResult.failure(resError)
+            } catch {
+                fatalError()
             }
-            
-            return AsyncResult.success(jsonObj)
         })
     }
 }
