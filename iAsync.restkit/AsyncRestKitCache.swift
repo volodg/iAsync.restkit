@@ -1,5 +1,5 @@
 //
-//  JAsyncRestKitCache.swift
+//  AsyncRestKitCache.swift
 //  iAsync_restkit
 //
 //  Created by Vladimir Gorbenko on 22.09.14.
@@ -10,7 +10,7 @@ import Foundation
 
 import iAsync_async
 
-public protocol JAsyncRestKitCache {
+public protocol AsyncRestKitCache {
     
     func loaderToSetData(data: NSData, forKey key: String) -> AsyncTypes<Void, NSError>.Async
     

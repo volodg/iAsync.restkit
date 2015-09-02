@@ -46,7 +46,7 @@ public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     let analyzerForData           : JAsyncBinderForIdentifier
     let cacheKeyForIdentifier     : JCacheKeyForIdentifier
     let ignoreFreshDataLoadFail   : Bool
-    let cache                     : JAsyncRestKitCache
+    let cache                     : AsyncRestKitCache
     let cacheDataLifeTimeInSeconds: NSTimeInterval
     
     public init(
@@ -55,7 +55,7 @@ public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
         analyzerForData           : JAsyncBinderForIdentifier,
         cacheKeyForIdentifier     : JCacheKeyForIdentifier,
         ignoreFreshDataLoadFail   : Bool,
-        cache                     : JAsyncRestKitCache,
+        cache                     : AsyncRestKitCache,
         cacheDataLifeTimeInSeconds: NSTimeInterval)
     {
         self.loadDataIdentifier         = loadDataIdentifier
