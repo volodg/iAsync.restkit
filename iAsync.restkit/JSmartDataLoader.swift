@@ -154,12 +154,12 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
         let finishCallbackHook = { (result: AsyncResult<(DataLoadContext, NSData), NSError>, doneCallback: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.DidFinishAsyncCallback?) -> () in
             
             switch result {
-            case let .Success(value):
-                //logs [ srvResponse_ logResponse ];
+            case .Success(let value):
+                //logs srvResponse_.logResponse()
                 let newResult = (DataRequestContext<DataLoadContext>.Outside(value.0), value.1)
                 
                 doneCallback?(result: AsyncResult.success(newResult))
-            case let .Failure(error):
+            case .Failure(let error):
                 //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
                 if ignoreFreshDataLoadFail {
                     if let noFreshDataError = bindError as? ErrorNoFreshData {
