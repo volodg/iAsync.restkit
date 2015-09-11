@@ -19,11 +19,11 @@ public struct JsonTools {
             
             do {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
-                return AsyncResult.success(jsonObj)
+                return .Success(jsonObj)
             } catch let error as NSError {
                 
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context)
-                return AsyncResult.failure(resError)
+                return .Failure(resError)
             } catch {
                 fatalError()
             }
