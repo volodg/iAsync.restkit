@@ -34,7 +34,7 @@ public enum DataRequestContext<DataLoadContext> {
     case CacheUpdateDate(NSDate)
 }
 
-public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
+final public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     
     public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<(DataRequestContext<DataLoadContext>, NSData), Result, NSError>.AsyncBinder
     public typealias JCacheKeyForIdentifier    = (loadDataIdentifier: Identifier) -> String
@@ -125,7 +125,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
     return bindSequenceOfAsyncs(cachedDataLoader, analyzer)
 }
 
-internal class ErrorNoFreshData : Error {
+final internal class ErrorNoFreshData : Error {
     
     let cachedData: (NSDate, NSData)
     

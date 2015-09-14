@@ -10,7 +10,7 @@ import Foundation
 
 import iAsync_utils
 
-public class ParseJsonDataError : Error
+final public class ParseJsonDataError : Error
 {
     let data     : NSData
     let jsonError: NSError
