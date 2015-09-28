@@ -121,8 +121,6 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES" }
   
-  s.pod_target_xcconfig = { 'SWIFT_WHOLE_MODULE_OPTIMIZATION' => 'YES' }
-
   s.dependency "iAsync.async"#, "~> 1.0.1"
   s.dependency "iAsync.utils"#, "~> 1.0.1"
 
