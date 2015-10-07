@@ -11,23 +11,6 @@ import Foundation
 import iAsync_async
 import iAsync_utils
 
-extension NSObject {
-    
-    //TODO give him long name
-    func logResponse() {
-        NSLog("jsResponse: \(self)")
-    }
-}
-
-extension NSData {
-    
-    override func logResponse() {
-        
-        let str = NSString(data:self, encoding:NSUTF8StringEncoding)
-        NSLog("jsResponse: \(str) length: \(length)")
-    }
-}
-
 public enum DataRequestContext<DataLoadContext> {
     
     case Outside(DataLoadContext)
@@ -155,7 +138,6 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
             
             switch result {
             case .Success(let value):
-                //logs srvResponse_.logResponse()
                 let newResult = (DataRequestContext<DataLoadContext>.Outside(value.0), value.1)
                 
                 doneCallback?(result: .Success(newResult))
