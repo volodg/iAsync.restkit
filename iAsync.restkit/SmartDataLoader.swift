@@ -1,5 +1,5 @@
 //
-//  JSmartDataLoader.swift
+//  SmartDataLoader.swift
 //  iAsync_restkit
 //
 //  Created by Vladimir Gorbenko on 22.09.14.
@@ -17,7 +17,7 @@ public enum DataRequestContext<DataLoadContext> {
     case CacheUpdateDate(NSDate)
 }
 
-final public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
+final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     
     public typealias JAsyncBinderForIdentifier = (loadDataIdentifier: Identifier) -> AsyncTypes2<(DataRequestContext<DataLoadContext>, NSData), Result, NSError>.AsyncBinder
     public typealias JCacheKeyForIdentifier    = (loadDataIdentifier: Identifier) -> String
@@ -49,7 +49,7 @@ final public class JSmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     }
 }
 
-public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: JSmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncTypes<Result, NSError>.Async {
+public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: SmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncTypes<Result, NSError>.Async {
     
     let loadDataIdentifier         = args.loadDataIdentifier
     let dataLoaderForIdentifier    = args.dataLoaderForIdentifier
@@ -63,7 +63,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
     
     let cachedDataLoader = { (progressCallback: AsyncProgressCallback?,
                               stateCallback   : AsyncChangeStateCallback?,
-                              finishCallback  : AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.DidFinishAsyncCallback?) -> JAsyncHandler in
+                              finishCallback  : AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.DidFinishAsyncCallback?) -> AsyncHandler in
         
         let loadCachedData: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async = loadFreshCachedDataWithUpdateDate(
             key,
@@ -110,13 +110,13 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
 
 final internal class ErrorNoFreshData : Error {
     
-    let cachedData: (NSDate, NSData)
+    let cachedData: (date: NSDate, data: NSData)
     
     override class func iAsyncErrorsDomain() -> String {
         return "com.just_for_fun.rest_kit_internal.library"
     }
     
-    required init(cachedData: (NSDate, NSData)) {
+    required init(cachedData: (date: NSDate, data: NSData)) {
         
         self.cachedData = cachedData
         super.init(description: "internal logic error (no fresh data)")
@@ -167,10 +167,10 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
 
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
     key: String,
-    cachedDataLoader: AsyncTypes<(NSDate, NSData), NSError>.Async,
+    cachedDataLoader: AsyncTypes<(date: NSDate, data: NSData), NSError>.Async,
     cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async
 {
-    let validateByDateResultBinder = { (cachedData: (NSDate, NSData)) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
+    let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
         
         let newDate = cachedData.0.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
         if newDate.compare(NSDate()) == NSComparisonResult.OrderedDescending {
