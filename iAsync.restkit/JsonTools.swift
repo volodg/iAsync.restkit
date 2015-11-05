@@ -21,11 +21,10 @@ public struct JsonTools {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
                 return .Success(jsonObj)
             } catch let error as NSError {
-                
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context)
                 return .Failure(resError)
             } catch {
-                fatalError()
+                return .Failure(Error(description: "unexpected system state 2"))
             }
         })
     }
