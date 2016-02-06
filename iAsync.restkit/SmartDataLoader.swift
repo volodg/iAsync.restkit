@@ -168,8 +168,8 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
     key: String,
     cachedDataLoader: AsyncTypes<(date: NSDate, data: NSData), NSError>.Async,
-    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async
-{
+    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async {
+
     let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
 
         let newDate = cachedData.0.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
