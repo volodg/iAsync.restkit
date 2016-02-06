@@ -10,13 +10,16 @@ import Foundation
 
 import iAsync_async
 import iAsync_utils
+import iAsync_reactiveKit
+
+import ReactiveKit
 
 public struct JsonTools {
-    
+
     public static func jsonLoader(data: NSData, context: CustomStringConvertible) -> AsyncTypes<AnyObject, NSError>.Async {
-        
-        return async(job: { () -> AsyncResult<AnyObject, NSError> in
-            
+
+        return asyncStreamWithJob { (progress: AnyObject -> Void) -> Result<AnyObject, NSError> in
+
             do {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
                 return .Success(jsonObj)
@@ -26,6 +29,6 @@ public struct JsonTools {
             } catch {
                 return .Failure(Error(description: "unexpected system state 2"))
             }
-        })
+        }.toAsync()
     }
 }
