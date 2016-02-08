@@ -158,8 +158,6 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
                 }
 
                 doneCallback?(result: .Failure(error))
-            case .Unsubscribed:
-                doneCallback?(result: .Unsubscribed)
             }
         }
         let dataLoader = dataLoaderForIdentifier(loadDataIdentifier)
