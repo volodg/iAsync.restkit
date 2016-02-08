@@ -140,6 +140,12 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
 
                 doneCallback?(result: .Success(newResult))
             case .Failure(let error):
+
+                if error is AsyncInterruptedError {
+                    doneCallback?(result: .Failure(error))
+                    return
+                }
+
                 //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
                 if ignoreFreshDataLoadFail {
                     if let noFreshDataError = bindError as? ErrorNoFreshData {
@@ -152,8 +158,6 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
                 }
 
                 doneCallback?(result: .Failure(error))
-            case .Interrupted:
-                doneCallback?(result: .Interrupted)
             case .Unsubscribed:
                 doneCallback?(result: .Unsubscribed)
             }
