@@ -51,7 +51,7 @@ final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     }
 }
 
-public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: SmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncTypes<Result, NSError>.Async {
+public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: SmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
 
     let loadDataIdentifier         = args.loadDataIdentifier
     let dataLoader                 = args.dataLoader
@@ -61,8 +61,8 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
     let cacheDataLifeTimeInSeconds = args.cacheDataLifeTimeInSeconds
     let ignoreFreshDataLoadFail    = args.ignoreFreshDataLoadFail
 
-    let cachedDataLoader = { (progressCallback: AsyncProgressCallback?,
-                              finishCallback  : AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.DidFinishAsyncCallback?) -> AsyncHandler in
+    typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
+    let cachedDataLoader: StreamTT = create { observer in
 
         let loadCachedData: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async = loadFreshCachedDataWithUpdateDate(
             cacheKey,
@@ -75,13 +75,10 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
             loadDataIdentifier: loadDataIdentifier)
 
         let loader = bindTrySequenceOfAsyncs(loadCachedData, dataLoaderBinder)
-
-        return loader(
-            progressCallback: progressCallback,
-            finishCallback  : finishCallback)
+        return asyncToStream(loader).observe(observer: observer)
     }
 
-    let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncTypes<Result, NSError>.Async in
+    let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, NSError> in
 
         let analyzer = analyzerForData(response)
 
@@ -98,10 +95,10 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
             }
         }
 
-        return analyzer.flatMap(AsyncStreamFlatMapStrategy.Latest, transform: { cacheBinder($0) }).toAsync()
+        return analyzer.flatMap(AsyncStreamFlatMapStrategy.Latest, transform: { cacheBinder($0) })
     }
 
-    return bindSequenceOfAsyncs(cachedDataLoader, analyzer)
+    return cachedDataLoader.flatMap(.Latest, transform: { analyzer($0) } )
 }
 
 final internal class ErrorNoFreshData : Error {
