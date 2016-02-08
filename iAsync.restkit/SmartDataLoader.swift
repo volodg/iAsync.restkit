@@ -10,6 +10,7 @@ import Foundation
 
 import iAsync_async
 import iAsync_utils
+import iAsync_reactiveKit
 
 public enum DataRequestContext<DataLoadContext> {
 
@@ -93,7 +94,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
 
             switch response.0 {
             case .Outside:
-                let loader = cache.loaderToSetData(response.1, forKey:key)
+                let loader = cache.loaderToSetData(response.1, forKey:key).toAsync()
                 return sequenceOfAsyncs(loader, resultLoader)
             case .CacheUpdateDate:
                 return resultLoader
@@ -167,13 +168,13 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
 
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
     key: String,
-    cachedDataLoader: AsyncTypes<(date: NSDate, data: NSData), NSError>.Async,
+    cachedDataLoader: AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>,
     cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async {
 
     let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
 
         let newDate = cachedData.0.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
-        if newDate.compare(NSDate()) == NSComparisonResult.OrderedDescending {
+        if newDate.compare(NSDate()) == .OrderedDescending {
 
             let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
             return async(value: cachedResult)
@@ -183,5 +184,5 @@ private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
         return async(error: error)
     }
 
-    return bindSequenceOfAsyncs(cachedDataLoader, validateByDateResultBinder)
+    return bindSequenceOfAsyncs(cachedDataLoader.toAsync(), validateByDateResultBinder)
 }

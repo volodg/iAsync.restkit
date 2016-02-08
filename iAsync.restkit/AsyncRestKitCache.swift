@@ -8,11 +8,11 @@
 
 import Foundation
 
-import iAsync_async
+import iAsync_reactiveKit
 
 public protocol AsyncRestKitCache {
 
-    func loaderToSetData(data: NSData, forKey key: String) -> AsyncTypes<Void, NSError>.Async
+    func loaderToSetData(data: NSData, forKey key: String) -> AsyncStream<Void, AnyObject, NSError>
 
-    func cachedDataLoaderForKey(key: String) -> AsyncTypes<(date: NSDate, data: NSData), NSError>.Async
+    func cachedDataLoaderForKey(key: String) -> AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>
 }
