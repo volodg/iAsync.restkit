@@ -8,7 +8,6 @@
 
 import Foundation
 
-import iAsync_async
 import iAsync_utils
 import iAsync_reactiveKit
 
@@ -64,7 +63,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
     typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
     let cachedDataLoader: StreamTT = create { observer in
 
-        let loadCachedData: AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async = loadFreshCachedDataWithUpdateDate(
+        let loadCachedData: AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> = loadFreshCachedDataWithUpdateDate(
             cacheKey,
             cachedDataLoader          : cache.cachedDataLoaderForKey(cacheKey),
             cacheDataLifeTimeInSeconds: cacheDataLifeTimeInSeconds)
@@ -74,8 +73,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
             dataLoader        : dataLoader,
             loadDataIdentifier: loadDataIdentifier)
 
-        let loader = bindTrySequenceOfAsyncs(loadCachedData, dataLoaderBinder)
-        return asyncToStream(loader).observe(observer: observer)
+        return loadCachedData.flatMapError { dataLoaderBinder($0) }.observe(observer: observer)
     }
 
     let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, NSError> in
@@ -84,14 +82,14 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
 
         let cacheBinder = { (analyzedData: Result) -> AsyncStream<Result, AnyObject, NSError> in
 
-            let resultLoader: AsyncTypes<Result, NSError>.Async = async(value: analyzedData)
+            let resultLoader = AsyncStream<Result, AnyObject, NSError>.succeeded(with: analyzedData)
 
             switch response.0 {
             case .Outside:
-                let loader = cache.loaderToSetData(response.1, forKey:cacheKey).toAsync()
-                return asyncToStream(sequenceOfAsyncs(loader, resultLoader))
+                let loader = cache.loaderToSetData(response.1, forKey:cacheKey)
+                return loader.flatMap(.Latest, transform: { _ in resultLoader })
             case .CacheUpdateDate:
-                return asyncToStream(resultLoader)
+                return resultLoader
             }
         }
 
@@ -123,9 +121,9 @@ final internal class ErrorNoFreshData : Error {
 private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
     ignoreFreshDataLoadFail: Bool,
     dataLoader             : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
-    loadDataIdentifier     : Identifier) -> AsyncTypes2<NSError, (DataRequestContext<DataLoadContext>, NSData), NSError>.AsyncBinder
+    loadDataIdentifier     : Identifier) -> NSError -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
 {
-    return { (bindError: NSError) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
+    return { (bindError: NSError) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
 
         let dataLoader = dataLoader.map({ value -> (DataRequestContext<DataLoadContext>, NSData) in
 
@@ -150,27 +148,27 @@ private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
             return .Failure(error)
         })
 
-        return dataLoader.toAsync()
+        return dataLoader
     }
 }
 
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
     key: String,
     cachedDataLoader: AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>,
-    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async {
+    cacheDataLifeTimeInSeconds: NSTimeInterval) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> {
 
-    let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> AsyncTypes<(DataRequestContext<DataLoadContext>, NSData), NSError>.Async in
+    let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> Result<(DataRequestContext<DataLoadContext>, NSData), NSError> in
 
         let newDate = cachedData.0.dateByAddingTimeInterval(cacheDataLifeTimeInSeconds)
         if newDate.compare(NSDate()) == .OrderedDescending {
 
             let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
-            return async(value: cachedResult)
+            return .Success(cachedResult)
         }
 
         let error = ErrorNoFreshData(cachedData: cachedData)
-        return async(error: error)
+        return .Failure(error)
     }
 
-    return bindSequenceOfAsyncs(cachedDataLoader.toAsync(), validateByDateResultBinder)
+    return cachedDataLoader.tryMap(validateByDateResultBinder)
 }
