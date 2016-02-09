@@ -96,7 +96,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
         return analyzer.flatMap(AsyncStreamFlatMapStrategy.Latest, transform: { cacheBinder($0) })
     }
 
-    return cachedDataLoader.next { analyzer($0) }
+    return cachedDataLoader.next(analyzer)
 }
 
 final internal class ErrorNoFreshData : Error {
