@@ -87,7 +87,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
             switch response.0 {
             case .Outside:
                 let loader = cache.loaderToSetData(response.1, forKey:cacheKey)
-                return loader.flatMap(.Latest, transform: { _ in resultLoader })
+                return loader.next { _ in resultLoader }
             case .CacheUpdateDate:
                 return resultLoader
             }
@@ -96,7 +96,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
         return analyzer.flatMap(AsyncStreamFlatMapStrategy.Latest, transform: { cacheBinder($0) })
     }
 
-    return cachedDataLoader.flatMap(.Latest, transform: { analyzer($0) } )
+    return cachedDataLoader.next { analyzer($0) }
 }
 
 final internal class ErrorNoFreshData : Error {
