@@ -24,7 +24,7 @@ final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
     public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, NSData) -> AsyncStream<Result, AnyObject, NSError>
 
     let loadDataIdentifier        : Identifier
-    let dataLoader                : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>
+    let dataStream                : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>
     let analyzerForData           : AnalyzerType
     let cacheKey                  : String
     let ignoreFreshDataLoadFail   : Bool
@@ -33,7 +33,7 @@ final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
 
     public init(
         loadDataIdentifier        : Identifier,
-        dataLoader                : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
+        dataStream                : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
         analyzerForData           : AnalyzerType,
         cacheKey                  : String,
         ignoreFreshDataLoadFail   : Bool,
@@ -41,7 +41,7 @@ final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
         cacheDataLifeTimeInSeconds: NSTimeInterval) {
 
         self.loadDataIdentifier         = loadDataIdentifier
-        self.dataLoader                 = dataLoader
+        self.dataStream                 = dataStream
         self.analyzerForData            = analyzerForData
         self.cacheKey                   = cacheKey
         self.ignoreFreshDataLoadFail    = ignoreFreshDataLoadFail
@@ -53,7 +53,7 @@ final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
 public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: SmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
 
     let loadDataIdentifier         = args.loadDataIdentifier
-    let dataLoader                 = args.dataLoader
+    let dataStream                 = args.dataStream
     let analyzerForData            = args.analyzerForData
     let cache                      = args.cache
     let cacheKey                   = args.cacheKey
@@ -70,7 +70,7 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
 
         let dataLoaderBinder = dataLoaderWithCachedResultBinder(
             ignoreFreshDataLoadFail,
-            dataLoader        : dataLoader,
+            dataStream        : dataStream,
             loadDataIdentifier: loadDataIdentifier)
 
         return loadCachedData.flatMapError { dataLoaderBinder($0) }.observe(observer: observer)
@@ -120,12 +120,12 @@ final internal class ErrorNoFreshData : Error {
 
 private func dataLoaderWithCachedResultBinder<Identifier, DataLoadContext>(
     ignoreFreshDataLoadFail: Bool,
-    dataLoader             : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
+    dataStream             : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
     loadDataIdentifier     : Identifier) -> NSError -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
 {
     return { (bindError: NSError) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
 
-        let dataLoader = dataLoader.map({ value -> (DataRequestContext<DataLoadContext>, NSData) in
+        let dataLoader = dataStream.map({ value -> (DataRequestContext<DataLoadContext>, NSData) in
 
             let newResult = (DataRequestContext<DataLoadContext>.Outside(value.0), value.1)
             return newResult
