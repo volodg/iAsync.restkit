@@ -13,6 +13,8 @@ import iAsync_reactiveKit
 
 import ReactiveKit
 
+public class JsonParserError : Error {}
+
 public extension AsyncStreamType where Self.Value == NSData, Self.Error == NSError {
 
     func toJson() -> AsyncStream<AnyObject, AnyObject, NSError> {
@@ -26,7 +28,7 @@ public struct JsonTools {
 
     public static func jsonLoader(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, NSError> {
 
-        return asyncStreamWithJob { (progress: AnyObject -> Void) -> Result<AnyObject, NSError> in
+        return asyncStreamWithJob { progress -> Result<AnyObject, NSError> in
 
             do {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
@@ -35,7 +37,7 @@ public struct JsonTools {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
                 return .Failure(resError)
             } catch {
-                return .Failure(Error(description: "unexpected system state 2"))
+                return .Failure(JsonParserError(description: "JsonTools.jsonLoader: unexpected system state"))
             }
         }
     }
