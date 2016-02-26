@@ -107,7 +107,17 @@ public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args:
             }
         }
 
-        return analyzer.flatMap { cacheBinder($0) }
+        let stream = analyzer.flatMap { cacheBinder($0) }
+
+        return stream.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
+
+            switch response.0 {
+            case .Outside:
+                return cachedDataStream(nil).flatMap(analyzerForData)
+            case .CacheUpdateDate:
+                return AsyncStream.failed(with: error)
+            }
+        }
     }
 
     return cachedDataLoader.flatMap(analyzer)
