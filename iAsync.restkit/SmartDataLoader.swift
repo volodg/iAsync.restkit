@@ -19,108 +19,104 @@ public enum DataRequestContext<DataLoadContext> {
     case CacheUpdateDate(NSDate)
 }
 
-final public class SmartDataLoaderFields<Identifier, Result, DataLoadContext> {
+public enum CacheStrategy {
+
+    case NetworkFirst
+    case CacheFirst(NSTimeInterval?)
+}
+
+final public class SmartDataLoaderFields<Result, DataLoadContext> {
 
     public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, NSData) -> AsyncStream<Result, AnyObject, NSError>
 
-    let loadDataIdentifier        : Identifier
-    let dataStream                : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>
-    let analyzerForData           : AnalyzerType
-    let cacheKey                  : String
-    let ignoreFreshDataLoadFail   : Bool
-    let cache                     : AsyncRestKitCache
-    let cacheDataLifeTimeInSeconds: NSTimeInterval
+    let dataStream     : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>
+    let analyzerForData: AnalyzerType
+    let cacheKey       : String
+    let cache          : AsyncRestKitCache
+    let strategy       : CacheStrategy
 
     public init(
-        loadDataIdentifier        : Identifier,
-        dataStream                : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
-        analyzerForData           : AnalyzerType,
-        cacheKey                  : String,
-        ignoreFreshDataLoadFail   : Bool,
-        cache                     : AsyncRestKitCache,
-        cacheDataLifeTimeInSeconds: NSTimeInterval) {
+        dataStream     : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
+        analyzerForData: AnalyzerType,
+        cacheKey       : String,
+        cache          : AsyncRestKitCache,
+        strategy       : CacheStrategy) {
 
-        self.loadDataIdentifier         = loadDataIdentifier
-        self.dataStream                 = dataStream
-        self.analyzerForData            = analyzerForData
-        self.cacheKey                   = cacheKey
-        self.ignoreFreshDataLoadFail    = ignoreFreshDataLoadFail
-        self.cache                      = cache
-        self.cacheDataLifeTimeInSeconds = cacheDataLifeTimeInSeconds
+        self.dataStream      = dataStream
+        self.analyzerForData = analyzerForData
+        self.cacheKey        = cacheKey
+        self.cache           = cache
+        self.strategy        = strategy
     }
 }
 
-public func jSmartDataLoaderWithCache<Identifier, Result, DataLoadContext>(args: SmartDataLoaderFields<Identifier, Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
+public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLoaderFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
 
-    let loadDataIdentifier         = args.loadDataIdentifier
-    let dataStream                 = args.dataStream
-    let analyzerForData            = args.analyzerForData
-    let cache                      = args.cache
-    let cacheKey                   = args.cacheKey
-    let cacheDataLifeTimeInSeconds = args.cacheDataLifeTimeInSeconds
-    let ignoreFreshDataLoadFail    = args.ignoreFreshDataLoadFail
+    let dataStream      = args.dataStream
+    let analyzerForData = args.analyzerForData
+    let cache           = args.cache
+    let cacheKey        = args.cacheKey
+    let strategy        = args.strategy
 
-    let cachedDataStream = { (ttl: NSTimeInterval?) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
+    let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> =
+        loadFreshCachedDataWithUpdateDate(cache.cachedDataLoaderForKey(cacheKey), strategy: strategy)
 
-        return loadFreshCachedDataWithUpdateDate(
-            cacheKey,
-            cachedDataSteam: cache.cachedDataLoaderForKey(cacheKey),
-            ttl            : ttl)
-    }
-
-    if cacheDataLifeTimeInSeconds <= 0.0 {
-
+    switch args.strategy {
+    case .NetworkFirst:
         return dataStream.flatMap { (context, data) -> AsyncStream<Result, AnyObject, NSError> in
-            return analyzerForData(DataRequestContext.Outside(context), data)
+            return analyzerForData(DataRequestContext.Outside(context), data).flatMap { result -> AsyncStream<Result, AnyObject, NSError> in
+
+                let stream = cache.loaderToSetData(data, forKey:cacheKey)
+                return stream.map { result }
+            }
         }.flatMapError { _ -> AsyncStream<Result, AnyObject, NSError> in
-            return cachedDataStream(nil).flatMap(analyzerForData)
+            return cachedDataStream.flatMap(analyzerForData)
         }
-    }
+    case .CacheFirst:
 
-    typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
-    let cachedDataLoader: StreamTT = create { observer in
+        typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
+        let cachedDataLoader: StreamTT = create { observer in
 
-        let loadCachedData = cachedDataStream(cacheDataLifeTimeInSeconds)
+            return cachedDataStream.flatMapError { error -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
 
-        let dataLoaderBinder = dataStreamWithCachedResultBinder(
-            ignoreFreshDataLoadFail,
-            dataStream        : dataStream,
-            loadDataIdentifier: loadDataIdentifier)
+                return dataStream.map { value -> (DataRequestContext<DataLoadContext>, NSData) in
 
-        return loadCachedData.flatMapError { dataLoaderBinder($0) }.observe(observer: observer)
-    }
+                    let newResult = (DataRequestContext<DataLoadContext>.Outside(value.0), value.1)
+                    return newResult
+                }
+            }.observe(observer: observer)
+        }
 
-    let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, NSError> in
+        let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, NSError> in
 
-        let analyzer = analyzerForData(response)
+            let analyzer = analyzerForData(response)
 
-        let cacheBinder = { (analyzedData: Result) -> AsyncStream<Result, AnyObject, NSError> in
+            let cacheBinder = { (analyzedData: Result) -> AsyncStream<Result, AnyObject, NSError> in
 
-            let resultLoader = AsyncStream<Result, AnyObject, NSError>.succeeded(with: analyzedData)
+                switch response.0 {
+                case .Outside:
+                    let loader = cache.loaderToSetData(response.1, forKey:cacheKey)
+                    return loader.map { analyzedData }
+                case .CacheUpdateDate:
+                    return AsyncStream.succeeded(with: analyzedData)
+                }
+            }
 
-            switch response.0 {
-            case .Outside:
-                let loader = cache.loaderToSetData(response.1, forKey:cacheKey)
-                return loader.flatMap { resultLoader }
-            case .CacheUpdateDate:
-                return resultLoader
+            let stream = analyzer.flatMap { cacheBinder($0) }
+
+            return stream.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
+
+                switch response.0 {
+                case .Outside:
+                    return cachedDataStream.flatMap(analyzerForData)
+                case .CacheUpdateDate:
+                    return AsyncStream.failed(with: error)
+                }
             }
         }
 
-        let stream = analyzer.flatMap { cacheBinder($0) }
-
-        return stream.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
-
-            switch response.0 {
-            case .Outside:
-                return cachedDataStream(nil).flatMap(analyzerForData)
-            case .CacheUpdateDate:
-                return AsyncStream.failed(with: error)
-            }
-        }
+        return cachedDataLoader.flatMap(analyzer)
     }
-
-    return cachedDataLoader.flatMap(analyzer)
 }
 
 final internal class ErrorNoFreshData : Error {
@@ -142,61 +138,30 @@ final internal class ErrorNoFreshData : Error {
     }
 }
 
-private func dataStreamWithCachedResultBinder<Identifier, DataLoadContext>(
-    ignoreFreshDataLoadFail: Bool,
-    dataStream             : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
-    loadDataIdentifier     : Identifier) -> NSError -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
-{
-    return { (bindError: NSError) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
-
-        let dataLoader = dataStream.map { value -> (DataRequestContext<DataLoadContext>, NSData) in
-
-            let newResult = (DataRequestContext<DataLoadContext>.Outside(value.0), value.1)
-            return newResult
-        }.tryMapError({ error -> Result<(DataRequestContext<DataLoadContext>, NSData), NSError> in
-
-            if error is AsyncInterruptedError {
-                return .Failure(error)
-            }
-
-            //TODO test [bindError isKindOfClass:[JFFErrorNoFreshData class]] issue, here it can got - not data in cache error !!!
-            if ignoreFreshDataLoadFail {
-                if let noFreshDataError = bindError as? ErrorNoFreshData {
-
-                    let newResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(noFreshDataError.cachedData.0), noFreshDataError.cachedData.1)
-
-                    return .Success(newResult)
-                }
-            }
-
-            return .Failure(error)
-        })
-
-        return dataLoader
-    }
-}
-
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
-    key            : String,
     cachedDataSteam: AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>,
-    ttl            : NSTimeInterval?) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> {
-
+    strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> {
+        
     let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> Result<(DataRequestContext<DataLoadContext>, NSData), NSError> in
 
-        guard let ttl = ttl else {
-            let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
+        let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
+
+        switch strategy {
+        case .NetworkFirst:
             return .Success(cachedResult)
+        case .CacheFirst(let ttl):
+            guard let ttl = ttl else { return .Success(cachedResult) }
+
+            let newDate = cachedData.0.dateByAddingTimeInterval(ttl)
+            if newDate.compare(NSDate()) == .OrderedDescending {
+
+                let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
+                return .Success(cachedResult)
+            }
+
+            let error = ErrorNoFreshData(cachedData: cachedData)
+            return .Failure(error)
         }
-
-        let newDate = cachedData.0.dateByAddingTimeInterval(ttl)
-        if newDate.compare(NSDate()) == .OrderedDescending {
-
-            let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
-            return .Success(cachedResult)
-        }
-
-        let error = ErrorNoFreshData(cachedData: cachedData)
-        return .Failure(error)
     }
 
     return cachedDataSteam.tryMap(validateByDateResultBinder)
