@@ -8,24 +8,37 @@
 
 import Foundation
 
-import iAsync_async
 import iAsync_utils
+import iAsync_reactiveKit
+
+import ReactiveKit
+
+public class JsonParserError : Error {}
+
+public extension AsyncStreamType where Self.Value == NSData, Self.Error == NSError {
+
+    func toJson() -> AsyncStream<AnyObject, AnyObject, NSError> {
+
+        let stream = self.mapNext2AnyObject()
+        return stream.flatMap { JsonTools.jsonLoader($0) }
+    }
+}
 
 public struct JsonTools {
-    
-    public static func jsonLoader(data: NSData, context: CustomStringConvertible) -> AsyncTypes<AnyObject, NSError>.Async {
-        
-        return async(job: { () -> AsyncResult<AnyObject, NSError> in
-            
+
+    public static func jsonLoader(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, NSError> {
+
+        return asyncStreamWithJob { progress -> Result<AnyObject, NSError> in
+
             do {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
                 return .Success(jsonObj)
             } catch let error as NSError {
-                let resError = ParseJsonDataError(data: data, jsonError: error, context: context)
+                let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
                 return .Failure(resError)
             } catch {
-                return .Failure(Error(description: "unexpected system state 2"))
+                return .Failure(JsonParserError(description: "JsonTools.jsonLoader: unexpected system state"))
             }
-        })
+        }
     }
 }

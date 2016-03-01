@@ -215,6 +215,7 @@
 		4C63C7201B3C77E8003984DE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = EmbeddedSources;
 				TargetAttributes = {
