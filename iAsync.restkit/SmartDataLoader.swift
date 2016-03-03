@@ -95,8 +95,8 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
 
                 switch response.0 {
                 case .Outside:
-                    let loader = cache.loaderToSetData(response.1, forKey:cacheKey)
-                    return loader.map { analyzedData }
+                    let stream = cache.loaderToSetData(response.1, forKey:cacheKey)
+                    return stream.map { analyzedData }
                 case .CacheUpdateDate:
                     return AsyncStream.succeeded(with: analyzedData)
                 }
