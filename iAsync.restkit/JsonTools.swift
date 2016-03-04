@@ -9,7 +9,9 @@
 import Foundation
 
 import iAsync_utils
-import iAsync_reactiveKit
+import struct iAsync_reactiveKit.AsyncStream
+import protocol iAsync_reactiveKit.AsyncStreamType
+import func iAsync_reactiveKit.asyncStreamWithJob
 
 import ReactiveKit
 

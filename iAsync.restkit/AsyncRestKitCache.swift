@@ -8,7 +8,7 @@
 
 import Foundation
 
-import iAsync_reactiveKit
+import struct iAsync_reactiveKit.AsyncStream
 
 public protocol AsyncRestKitCache {
 
