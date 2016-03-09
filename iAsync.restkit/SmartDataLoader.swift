@@ -70,15 +70,15 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
                 let stream = cache.loaderToSetData(data, forKey:cacheKey)
                 return stream.map { result }
             }
-        }.flatMapError { _ -> AsyncStream<Result, AnyObject, NSError> in
-            return cachedDataStream.flatMap(analyzerForData)
+        }.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
+            return cachedDataStream.flatMap(analyzerForData).mapError { _ in error }
         }
     case .CacheFirst:
 
         typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
         let cachedDataLoader: StreamTT = create { observer in
 
-            return cachedDataStream.flatMapError { error -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
+            return cachedDataStream.flatMapError { _ -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
 
                 return dataStream.map { value -> (DataRequestContext<DataLoadContext>, NSData) in
 
@@ -92,7 +92,7 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
 
             let analyzer = analyzerForData(response)
 
-            let cacheBinder = { (analyzedData: Result) -> AsyncStream<Result, AnyObject, NSError> in
+            let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, AnyObject, NSError> in
 
                 switch response.0 {
                 case .Outside:
@@ -103,13 +103,11 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
                 }
             }
 
-            let stream = analyzer.flatMap { cacheBinder($0) }
-
             return stream.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
 
                 switch response.0 {
                 case .Outside:
-                    return cachedDataStream.flatMap(analyzerForData)
+                    return cachedDataStream.flatMap(analyzerForData).mapError { _ in error }
                 case .CacheUpdateDate:
                     return AsyncStream.failed(with: error)
                 }
