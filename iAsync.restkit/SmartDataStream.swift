@@ -1,5 +1,5 @@
 //
-//  SmartDataLoader.swift
+//  SmartDataStream.swift
 //  iAsync_restkit
 //
 //  Created by Vladimir Gorbenko on 22.09.14.
@@ -26,7 +26,7 @@ public enum CacheStrategy {
     case CacheFirst(NSTimeInterval?)
 }
 
-final public class SmartDataLoaderFields<Result, DataLoadContext> {
+final public class SmartDataStreamFields<Result, DataLoadContext> {
 
     public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, NSData) -> AsyncStream<Result, AnyObject, NSError>
 
@@ -51,7 +51,7 @@ final public class SmartDataLoaderFields<Result, DataLoadContext> {
     }
 }
 
-public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLoaderFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
+public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
 
     let dataStream      = args.dataStream
     let analyzerForData = args.analyzerForData
@@ -60,7 +60,7 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
     let strategy        = args.strategy
 
     let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> =
-        loadFreshCachedDataWithUpdateDate(cache.cachedDataLoaderForKey(cacheKey), strategy: strategy)
+        loadFreshCachedDataWithUpdateDate(cache.cachedDataStreamForKey(cacheKey), strategy: strategy)
 
     switch args.strategy {
     case .NetworkFirst:
@@ -76,7 +76,7 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
     case .CacheFirst:
 
         typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
-        let cachedDataLoader: StreamTT = create { observer in
+        let cachedDataStream: StreamTT = create { observer in
 
             return cachedDataStream.flatMapError { _ -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
 
@@ -114,7 +114,7 @@ public func jSmartDataLoaderWithCache<Result, DataLoadContext>(args: SmartDataLo
             }
         }
 
-        return cachedDataLoader.flatMap(analyzer)
+        return cachedDataStream.flatMap(analyzer)
     }
 }
 

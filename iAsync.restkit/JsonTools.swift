@@ -22,13 +22,13 @@ public extension AsyncStreamType where Self.Value == NSData, Self.Error == NSErr
     func toJson() -> AsyncStream<AnyObject, AnyObject, NSError> {
 
         let stream = self.mapNext2AnyObject()
-        return stream.flatMap { JsonTools.jsonLoader($0) }
+        return stream.flatMap { JsonTools.jsonStream($0) }
     }
 }
 
 public struct JsonTools {
 
-    public static func jsonLoader(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, NSError> {
+    public static func jsonStream(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, NSError> {
 
         return asyncStreamWithJob { progress -> Result<AnyObject, NSError> in
 
@@ -39,7 +39,7 @@ public struct JsonTools {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
                 return .Failure(resError)
             } catch {
-                return .Failure(JsonParserError(description: "JsonTools.jsonLoader: unexpected system state"))
+                return .Failure(JsonParserError(description: "JsonTools.jsonStream: unexpected system state"))
             }
         }
     }

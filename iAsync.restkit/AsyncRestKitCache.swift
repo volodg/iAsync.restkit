@@ -14,5 +14,5 @@ public protocol AsyncRestKitCache {
 
     func loaderToSetData(data: NSData, forKey key: String) -> AsyncStream<Void, AnyObject, NSError>
 
-    func cachedDataLoaderForKey(key: String) -> AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>
+    func cachedDataStreamForKey(key: String) -> AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>
 }
