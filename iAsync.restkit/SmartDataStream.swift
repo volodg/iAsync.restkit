@@ -28,16 +28,16 @@ public enum CacheStrategy {
 
 final public class SmartDataStreamFields<Result, DataLoadContext> {
 
-    public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, NSData) -> AsyncStream<Result, AnyObject, NSError>
+    public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, NSData) -> AsyncStream<Result, AnyObject, ErrorWithContext>
 
-    let dataStream     : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>
+    let dataStream     : AsyncStream<(DataLoadContext, NSData), AnyObject, ErrorWithContext>
     let analyzerForData: AnalyzerType
     let cacheKey       : String
     let cache          : AsyncRestKitCache
     let strategy       : CacheStrategy
 
     public init(
-        dataStream     : AsyncStream<(DataLoadContext, NSData), AnyObject, NSError>,
+        dataStream     : AsyncStream<(DataLoadContext, NSData), AnyObject, ErrorWithContext>,
         analyzerForData: AnalyzerType,
         cacheKey       : String,
         cache          : AsyncRestKitCache,
@@ -51,7 +51,7 @@ final public class SmartDataStreamFields<Result, DataLoadContext> {
     }
 }
 
-public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, NSError> {
+public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, ErrorWithContext> {
 
     let dataStream      = args.dataStream
     let analyzerForData = args.analyzerForData
@@ -59,26 +59,26 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataSt
     let cacheKey        = args.cacheKey
     let strategy        = args.strategy
 
-    let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> =
+    let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, ErrorWithContext> =
         loadFreshCachedDataWithUpdateDate(cache.cachedDataStreamForKey(cacheKey), strategy: strategy)
 
     switch args.strategy {
     case .NetworkFirst:
-        return dataStream.flatMap { (context, data) -> AsyncStream<Result, AnyObject, NSError> in
-            return analyzerForData(DataRequestContext.Outside(context), data).flatMap { result -> AsyncStream<Result, AnyObject, NSError> in
+        return dataStream.flatMap { (context, data) -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+            return analyzerForData(DataRequestContext.Outside(context), data).flatMap { result -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
                 let stream = cache.loaderToSetData(data, forKey:cacheKey)
                 return stream.map { result }
             }
-        }.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
+        }.flatMapError { error -> AsyncStream<Result, AnyObject, ErrorWithContext> in
             return cachedDataStream.flatMap(analyzerForData).mapError { _ in error }
         }
     case .CacheFirst:
 
-        typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError>
+        typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, ErrorWithContext>
         let cachedDataStream: StreamTT = create { observer in
 
-            return cachedDataStream.flatMapError { _ -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> in
+            return cachedDataStream.flatMapError { _ -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, ErrorWithContext> in
 
                 return dataStream.map { value -> (DataRequestContext<DataLoadContext>, NSData) in
 
@@ -88,11 +88,11 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataSt
             }.observe(observer: observer)
         }
 
-        let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, NSError> in
+        let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
             let analyzer = analyzerForData(response)
 
-            let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, AnyObject, NSError> in
+            let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
                 switch response.0 {
                 case .Outside:
@@ -103,7 +103,7 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataSt
                 }
             }
 
-            return stream.flatMapError { error -> AsyncStream<Result, AnyObject, NSError> in
+            return stream.flatMapError { error -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
                 switch response.0 {
                 case .Outside:
@@ -138,10 +138,10 @@ final internal class ErrorNoFreshData : Error {
 }
 
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
-    cachedDataSteam: AsyncStream<(date: NSDate, data: NSData), AnyObject, NSError>,
-    strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, NSError> {
-        
-    let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> Result<(DataRequestContext<DataLoadContext>, NSData), NSError> in
+    cachedDataSteam: AsyncStream<(date: NSDate, data: NSData), AnyObject, ErrorWithContext>,
+    strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, ErrorWithContext> {
+
+    let validateByDateResultBinder = { (cachedData: (date: NSDate, data: NSData)) -> Result<(DataRequestContext<DataLoadContext>, NSData), ErrorWithContext> in
 
         let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
 
@@ -159,7 +159,8 @@ private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
             }
 
             let error = ErrorNoFreshData(cachedData: cachedData)
-            return .Failure(error)
+            let contextError = ErrorWithContext(error: error, context: "loadFreshCachedDataWithUpdateDate.CacheFirst")
+            return .Failure(contextError)
         }
     }
 

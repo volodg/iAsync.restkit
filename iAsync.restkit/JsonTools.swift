@@ -17,9 +17,9 @@ import ReactiveKit
 
 public class JsonParserError : Error {}
 
-public extension AsyncStreamType where Self.Value == NSData, Self.Error == NSError {
+public extension AsyncStreamType where Self.Value == NSData, Self.Error == ErrorWithContext {
 
-    func toJson() -> AsyncStream<AnyObject, AnyObject, NSError> {
+    func toJson() -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
 
         let stream = self.mapNext2AnyObject()
         return stream.flatMap { JsonTools.jsonStream($0) }
@@ -28,18 +28,20 @@ public extension AsyncStreamType where Self.Value == NSData, Self.Error == NSErr
 
 public struct JsonTools {
 
-    public static func jsonStream(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, NSError> {
+    public static func jsonStream(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
 
-        return asyncStreamWithJob { progress -> Result<AnyObject, NSError> in
+        return asyncStreamWithJob { progress -> Result<AnyObject, ErrorWithContext> in
 
             do {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
                 return .Success(jsonObj)
             } catch let error as NSError {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
-                return .Failure(resError)
+                let contextError = ErrorWithContext(error: resError, context: "JsonTools.jsonStream")
+                return .Failure(contextError)
             } catch {
-                return .Failure(JsonParserError(description: "JsonTools.jsonStream: unexpected system state"))
+                let contextError = ErrorWithContext(error: JsonParserError(description: "JsonTools.jsonStream: unexpected system state"), context: "JsonTools.jsonStream unexpected system state")
+                return .Failure(contextError)
             }
         }
     }
