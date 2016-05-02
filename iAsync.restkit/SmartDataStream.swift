@@ -118,7 +118,7 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataSt
     }
 }
 
-final internal class ErrorNoFreshData : Error {
+final internal class ErrorNoFreshData : UtilsError {
 
     let cachedData: (date: NSDate, data: NSData)
 

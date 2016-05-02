@@ -9,13 +9,11 @@
 import Foundation
 
 import iAsync_utils
-import struct iAsync_reactiveKit.AsyncStream
-import protocol iAsync_reactiveKit.AsyncStreamType
-import func iAsync_reactiveKit.asyncStreamWithJob
+import iAsync_reactiveKit
 
 import ReactiveKit
 
-public class JsonParserError : Error {}
+public class JsonParserError : UtilsError {}
 
 public extension AsyncStreamType where Self.Value == NSData, Self.Error == ErrorWithContext {
 
