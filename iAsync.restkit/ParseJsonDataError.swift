@@ -8,8 +8,6 @@
 
 import Foundation
 
-import iAsync_utils
-
 final public class ParseJsonDataError : UtilsError {
 
     let data     : NSData

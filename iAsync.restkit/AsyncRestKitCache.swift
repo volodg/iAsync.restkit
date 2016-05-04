@@ -8,9 +8,6 @@
 
 import Foundation
 
-import struct iAsync_reactiveKit.AsyncStream
-import struct iAsync_utils.ErrorWithContext
-
 public protocol AsyncRestKitCache {
 
     func loaderToSetData(data: NSData, forKey key: String) -> AsyncStream<Void, AnyObject, ErrorWithContext>
