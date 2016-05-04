@@ -86,7 +86,7 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataSt
 
         let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
-            let analyzer = analyzerForData(response)
+            let analyzer = analyzerForData(response.0, response.1)
 
             let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
