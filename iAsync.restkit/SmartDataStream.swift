@@ -155,7 +155,7 @@ private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
             }
 
             let error = ErrorNoFreshData(cachedData: cachedData)
-            let contextError = ErrorWithContext(error: error, context: "loadFreshCachedDataWithUpdateDate.CacheFirst")
+            let contextError = ErrorWithContext(error: error, context: #function)
             return .Failure(contextError)
         }
     }
