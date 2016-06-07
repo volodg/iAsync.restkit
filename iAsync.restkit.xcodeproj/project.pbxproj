@@ -7,15 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4555608275328E951BBB5773 /* Pods_iAsync_restkitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A160F42017E51BD1C55D4CA /* Pods_iAsync_restkitTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		4C63C72F1B3C77E8003984DE /* iAsync.restkit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C63C72E1B3C77E8003984DE /* iAsync.restkit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3899470A1403273863C2B752 /* Pods_iAsync_restkitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2F974B993EAD6C8FC0D12D /* Pods_iAsync_restkitTests.framework */; };
 		4C63C7351B3C77E8003984DE /* iAsync_restkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C63C7291B3C77E8003984DE /* iAsync_restkit.framework */; };
 		4C63C73C1B3C77E8003984DE /* iAsync_restkitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C73B1B3C77E8003984DE /* iAsync_restkitTests.swift */; };
-		4C63C74A1B3C7A55003984DE /* JResponseDataWithUpdateData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7461B3C7A55003984DE /* JResponseDataWithUpdateData.swift */; };
-		4C63C74B1B3C7A55003984DE /* JRestKitCachedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7471B3C7A55003984DE /* JRestKitCachedData.swift */; };
-		4C63C74C1B3C7A55003984DE /* JAsyncRestKitCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7481B3C7A55003984DE /* JAsyncRestKitCache.swift */; };
-		4C63C74D1B3C7A55003984DE /* JSmartDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63C7491B3C7A55003984DE /* JSmartDataLoader.swift */; };
-		BFCD747B7DCFB033E42780EF /* Pods_iAsync_restkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2D70A59EFCB901E90DD7BE8 /* Pods_iAsync_restkit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A935577F294658788525B177 /* Pods_iAsync_restkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33A1BDD53A9ECC1B8E75675C /* Pods_iAsync_restkit.framework */; };
+		C3C5F7401D06EC3400C1C2AA /* AsyncRestKitCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5F73A1D06EC3400C1C2AA /* AsyncRestKitCache.swift */; };
+		C3C5F7411D06EC3400C1C2AA /* iAsync.restkit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C5F73B1D06EC3400C1C2AA /* iAsync.restkit.h */; };
+		C3C5F7421D06EC3400C1C2AA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C3C5F73C1D06EC3400C1C2AA /* Info.plist */; };
+		C3C5F7431D06EC3400C1C2AA /* JsonTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5F73D1D06EC3400C1C2AA /* JsonTools.swift */; };
+		C3C5F7441D06EC3400C1C2AA /* ParseJsonDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5F73E1D06EC3400C1C2AA /* ParseJsonDataError.swift */; };
+		C3C5F7451D06EC3400C1C2AA /* SmartDataStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C5F73F1D06EC3400C1C2AA /* SmartDataStream.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,22 +30,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		013D205961D67F21B885EF35 /* Pods-iAsync.restkit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkit.release.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkit/Pods-iAsync.restkit.release.xcconfig"; sourceTree = "<group>"; };
-		12EB4876B317CA5ADFCE598E /* Pods-iAsync.restkit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkit/Pods-iAsync.restkit.debug.xcconfig"; sourceTree = "<group>"; };
-		47F0E1F73F7C469053CCC56A /* Pods-iAsync.restkitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		0BC2942BD43A952C7DA6B631 /* Pods-iAsync.restkit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkit/Pods-iAsync.restkit.debug.xcconfig"; sourceTree = "<group>"; };
+		15A994EB960F04B9428740AF /* Pods-iAsync.restkitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		33A1BDD53A9ECC1B8E75675C /* Pods_iAsync_restkit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iAsync_restkit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		47735F51A234AC992D2E3A96 /* Pods-iAsync.restkitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests.release.xcconfig"; sourceTree = "<group>"; };
 		4C63C7291B3C77E8003984DE /* iAsync_restkit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = iAsync_restkit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C63C72D1B3C77E8003984DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4C63C72E1B3C77E8003984DE /* iAsync.restkit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iAsync.restkit.h; sourceTree = "<group>"; };
 		4C63C7341B3C77E8003984DE /* iAsync.restkitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iAsync.restkitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C63C73A1B3C77E8003984DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C63C73B1B3C77E8003984DE /* iAsync_restkitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iAsync_restkitTests.swift; sourceTree = "<group>"; };
-		4C63C7461B3C7A55003984DE /* JResponseDataWithUpdateData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JResponseDataWithUpdateData.swift; sourceTree = "<group>"; };
-		4C63C7471B3C7A55003984DE /* JRestKitCachedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JRestKitCachedData.swift; sourceTree = "<group>"; };
-		4C63C7481B3C7A55003984DE /* JAsyncRestKitCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JAsyncRestKitCache.swift; sourceTree = "<group>"; };
-		4C63C7491B3C7A55003984DE /* JSmartDataLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSmartDataLoader.swift; sourceTree = "<group>"; };
-		8B41B392BB2523DB24BE1617 /* Pods-iAsync.restkitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests.release.xcconfig"; sourceTree = "<group>"; };
-		9A160F42017E51BD1C55D4CA /* Pods_iAsync_restkitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iAsync_restkitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F2D70A59EFCB901E90DD7BE8 /* Pods_iAsync_restkit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iAsync_restkit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACD5F6A9DBFCD37909FFCF13 /* Pods-iAsync.restkit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iAsync.restkit.release.xcconfig"; path = "Pods/Target Support Files/Pods-iAsync.restkit/Pods-iAsync.restkit.release.xcconfig"; sourceTree = "<group>"; };
+		C3C5F73A1D06EC3400C1C2AA /* AsyncRestKitCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncRestKitCache.swift; sourceTree = "<group>"; };
+		C3C5F73B1D06EC3400C1C2AA /* iAsync.restkit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iAsync.restkit.h; sourceTree = "<group>"; };
+		C3C5F73C1D06EC3400C1C2AA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3C5F73D1D06EC3400C1C2AA /* JsonTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTools.swift; sourceTree = "<group>"; };
+		C3C5F73E1D06EC3400C1C2AA /* ParseJsonDataError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseJsonDataError.swift; sourceTree = "<group>"; };
+		C3C5F73F1D06EC3400C1C2AA /* SmartDataStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartDataStream.swift; sourceTree = "<group>"; };
+		ED2F974B993EAD6C8FC0D12D /* Pods_iAsync_restkitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iAsync_restkitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFCD747B7DCFB033E42780EF /* Pods_iAsync_restkit.framework in Frameworks */,
+				A935577F294658788525B177 /* Pods_iAsync_restkit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,21 +62,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C63C7351B3C77E8003984DE /* iAsync_restkit.framework in Frameworks */,
-				4555608275328E951BBB5773 /* Pods_iAsync_restkitTests.framework in Frameworks */,
+				3899470A1403273863C2B752 /* Pods_iAsync_restkitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		33EFF4C72BC870CC9A829589 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				33A1BDD53A9ECC1B8E75675C /* Pods_iAsync_restkit.framework */,
+				ED2F974B993EAD6C8FC0D12D /* Pods_iAsync_restkitTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4C63C71F1B3C77E8003984DE = {
 			isa = PBXGroup;
 			children = (
-				4C63C72B1B3C77E8003984DE /* iAsync.restkit */,
+				C3C5F7391D06EC3400C1C2AA /* iAsync.restkit */,
 				4C63C7381B3C77E8003984DE /* iAsync.restkitTests */,
 				4C63C72A1B3C77E8003984DE /* Products */,
-				75D5D950EBFB650BB0021019 /* Pods */,
-				A0E9132DCA516DD7DF5239A1 /* Frameworks */,
+				DBDFA03495EFF6681DF049FF /* Pods */,
+				33EFF4C72BC870CC9A829589 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -86,26 +96,6 @@
 				4C63C7341B3C77E8003984DE /* iAsync.restkitTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		4C63C72B1B3C77E8003984DE /* iAsync.restkit */ = {
-			isa = PBXGroup;
-			children = (
-				4C63C7451B3C7A55003984DE /* Data */,
-				4C63C7481B3C7A55003984DE /* JAsyncRestKitCache.swift */,
-				4C63C7491B3C7A55003984DE /* JSmartDataLoader.swift */,
-				4C63C72E1B3C77E8003984DE /* iAsync.restkit.h */,
-				4C63C72C1B3C77E8003984DE /* Supporting Files */,
-			);
-			path = iAsync.restkit;
-			sourceTree = "<group>";
-		};
-		4C63C72C1B3C77E8003984DE /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				4C63C72D1B3C77E8003984DE /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		4C63C7381B3C77E8003984DE /* iAsync.restkitTests */ = {
@@ -125,33 +115,28 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		4C63C7451B3C7A55003984DE /* Data */ = {
+		C3C5F7391D06EC3400C1C2AA /* iAsync.restkit */ = {
 			isa = PBXGroup;
 			children = (
-				4C63C7461B3C7A55003984DE /* JResponseDataWithUpdateData.swift */,
-				4C63C7471B3C7A55003984DE /* JRestKitCachedData.swift */,
+				C3C5F73A1D06EC3400C1C2AA /* AsyncRestKitCache.swift */,
+				C3C5F73B1D06EC3400C1C2AA /* iAsync.restkit.h */,
+				C3C5F73C1D06EC3400C1C2AA /* Info.plist */,
+				C3C5F73D1D06EC3400C1C2AA /* JsonTools.swift */,
+				C3C5F73E1D06EC3400C1C2AA /* ParseJsonDataError.swift */,
+				C3C5F73F1D06EC3400C1C2AA /* SmartDataStream.swift */,
 			);
-			path = Data;
+			path = iAsync.restkit;
 			sourceTree = "<group>";
 		};
-		75D5D950EBFB650BB0021019 /* Pods */ = {
+		DBDFA03495EFF6681DF049FF /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				12EB4876B317CA5ADFCE598E /* Pods-iAsync.restkit.debug.xcconfig */,
-				013D205961D67F21B885EF35 /* Pods-iAsync.restkit.release.xcconfig */,
-				47F0E1F73F7C469053CCC56A /* Pods-iAsync.restkitTests.debug.xcconfig */,
-				8B41B392BB2523DB24BE1617 /* Pods-iAsync.restkitTests.release.xcconfig */,
+				0BC2942BD43A952C7DA6B631 /* Pods-iAsync.restkit.debug.xcconfig */,
+				ACD5F6A9DBFCD37909FFCF13 /* Pods-iAsync.restkit.release.xcconfig */,
+				15A994EB960F04B9428740AF /* Pods-iAsync.restkitTests.debug.xcconfig */,
+				47735F51A234AC992D2E3A96 /* Pods-iAsync.restkitTests.release.xcconfig */,
 			);
 			name = Pods;
-			sourceTree = "<group>";
-		};
-		A0E9132DCA516DD7DF5239A1 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F2D70A59EFCB901E90DD7BE8 /* Pods_iAsync_restkit.framework */,
-				9A160F42017E51BD1C55D4CA /* Pods_iAsync_restkitTests.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,7 +146,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C63C72F1B3C77E8003984DE /* iAsync.restkit.h in Headers */,
+				C3C5F7411D06EC3400C1C2AA /* iAsync.restkit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,12 +157,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4C63C73F1B3C77E8003984DE /* Build configuration list for PBXNativeTarget "iAsync.restkit" */;
 			buildPhases = (
-				9FE41227B045D64BA9A897ED /* Check Pods Manifest.lock */,
+				786A1D06C2244B94C63D3A74 /* [CP] Check Pods Manifest.lock */,
 				4C63C7241B3C77E8003984DE /* Sources */,
 				4C63C7251B3C77E8003984DE /* Frameworks */,
 				4C63C7261B3C77E8003984DE /* Headers */,
 				4C63C7271B3C77E8003984DE /* Resources */,
-				D290FB2946DD0CEA5AAA7539 /* Copy Pods Resources */,
+				47A9A216DD1406E542C36759 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -192,12 +177,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4C63C7421B3C77E8003984DE /* Build configuration list for PBXNativeTarget "iAsync.restkitTests" */;
 			buildPhases = (
-				57A7A53AAC1625E359A17955 /* Check Pods Manifest.lock */,
+				79294F3479DA1968BBDEAD6B /* [CP] Check Pods Manifest.lock */,
 				4C63C7301B3C77E8003984DE /* Sources */,
 				4C63C7311B3C77E8003984DE /* Frameworks */,
 				4C63C7321B3C77E8003984DE /* Resources */,
-				FB692413D0A77BF3B30FADBA /* Embed Pods Frameworks */,
-				5503CF63DFDC9713D0EEE1BB /* Copy Pods Resources */,
+				D90C765A875A64EAA1CC38D5 /* [CP] Embed Pods Frameworks */,
+				C6D93AE18131BDE18FD7D17B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -250,6 +235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3C5F7421D06EC3400C1C2AA /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,59 +249,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5503CF63DFDC9713D0EEE1BB /* Copy Pods Resources */ = {
+		47A9A216DD1406E542C36759 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		57A7A53AAC1625E359A17955 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		9FE41227B045D64BA9A897ED /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		D290FB2946DD0CEA5AAA7539 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,14 +264,59 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-iAsync.restkit/Pods-iAsync.restkit-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		FB692413D0A77BF3B30FADBA /* Embed Pods Frameworks */ = {
+		786A1D06C2244B94C63D3A74 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		79294F3479DA1968BBDEAD6B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C6D93AE18131BDE18FD7D17B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-iAsync.restkitTests/Pods-iAsync.restkitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D90C765A875A64EAA1CC38D5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -345,10 +331,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C63C74C1B3C7A55003984DE /* JAsyncRestKitCache.swift in Sources */,
-				4C63C74A1B3C7A55003984DE /* JResponseDataWithUpdateData.swift in Sources */,
-				4C63C74B1B3C7A55003984DE /* JRestKitCachedData.swift in Sources */,
-				4C63C74D1B3C7A55003984DE /* JSmartDataLoader.swift in Sources */,
+				C3C5F7401D06EC3400C1C2AA /* AsyncRestKitCache.swift in Sources */,
+				C3C5F7451D06EC3400C1C2AA /* SmartDataStream.swift in Sources */,
+				C3C5F7431D06EC3400C1C2AA /* JsonTools.swift in Sources */,
+				C3C5F7441D06EC3400C1C2AA /* ParseJsonDataError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,7 +448,7 @@
 		};
 		4C63C7401B3C77E8003984DE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 12EB4876B317CA5ADFCE598E /* Pods-iAsync.restkit.debug.xcconfig */;
+			baseConfigurationReference = 0BC2942BD43A952C7DA6B631 /* Pods-iAsync.restkit.debug.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -478,7 +464,7 @@
 		};
 		4C63C7411B3C77E8003984DE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 013D205961D67F21B885EF35 /* Pods-iAsync.restkit.release.xcconfig */;
+			baseConfigurationReference = ACD5F6A9DBFCD37909FFCF13 /* Pods-iAsync.restkit.release.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -494,7 +480,7 @@
 		};
 		4C63C7431B3C77E8003984DE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 47F0E1F73F7C469053CCC56A /* Pods-iAsync.restkitTests.debug.xcconfig */;
+			baseConfigurationReference = 15A994EB960F04B9428740AF /* Pods-iAsync.restkitTests.debug.xcconfig */;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -512,7 +498,7 @@
 		};
 		4C63C7441B3C77E8003984DE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B41B392BB2523DB24BE1617 /* Pods-iAsync.restkitTests.release.xcconfig */;
+			baseConfigurationReference = 47735F51A234AC992D2E3A96 /* Pods-iAsync.restkitTests.release.xcconfig */;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",

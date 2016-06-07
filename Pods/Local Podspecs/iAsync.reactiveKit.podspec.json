@@ -1,0 +1,34 @@
+{
+  "name": "iAsync.reactiveKit",
+  "version": "0.0.1",
+  "summary": "iAsync.reactiveKit lib provides tools used in other iAsync libraries",
+  "description": "iAsync.reactiveKit lib provides tools used in other iAsync libraries\n\n* contains usefull Arrays, Dict, String extensions",
+  "homepage": "https://www.facebook.com/vladimir.gorbenko.9",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Vladimir Gorbenko": "gorbenko.vova@gmail.com"
+  },
+  "social_media_url": "https://www.facebook.com/vladimir.gorbenko.9",
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source": {
+    "git": "https://github.com/volodg/iAsync.reactiveKit.git",
+    "tag": "0.0.1"
+  },
+  "source_files": "Lib/**/*.{swift,m,h}",
+  "xcconfig": {
+    "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES": "YES"
+  },
+  "dependencies": {
+    "iAsync.utils": [
+
+    ],
+    "ReactiveKit": [
+
+    ]
+  }
+}

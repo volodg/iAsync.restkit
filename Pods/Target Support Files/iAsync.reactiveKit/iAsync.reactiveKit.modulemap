@@ -1,0 +1,6 @@
+framework module iAsync_reactiveKit {
+  umbrella header "iAsync.reactiveKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

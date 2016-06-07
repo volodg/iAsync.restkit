@@ -3,15 +3,15 @@ use_frameworks!
 
 def import_pods
 
-pod 'iAsync.async'  , :path => '../iAsync.async'
-pod 'iAsync.utils'  , :path => '../iAsync.utils'
+pod 'iAsync.reactiveKit', :path => '../iAsync.reactiveKit'
+pod 'iAsync.utils'      , :path => '../iAsync.utils'
 
 end
 
-target 'iAsync.restkit', :exclusive => true do
+target 'iAsync.restkit' do
   import_pods
 end
 
-target 'iAsync.restkitTests', :exclusive => true do
+target 'iAsync.restkitTests' do
   import_pods
 end
