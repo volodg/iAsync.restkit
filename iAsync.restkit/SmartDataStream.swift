@@ -86,7 +86,7 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataSt
 
         let analyzer = { (response: (DataRequestContext<DataLoadContext>, NSData)) -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
-            let analyzer = analyzerForData(response.0, response.1)
+            let analyzer = analyzerForData(response)
 
             let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
@@ -155,7 +155,7 @@ private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
             }
 
             let error = ErrorNoFreshData(cachedData: cachedData)
-            let contextError = ErrorWithContext(error: error, context: #function)
+            let contextError = ErrorWithContext(error: error, context: "loadFreshCachedDataWithUpdateDate.CacheFirst")
             return .Failure(contextError)
         }
     }

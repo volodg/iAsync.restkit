@@ -32,10 +32,10 @@ public struct JsonTools {
                 return .Success(jsonObj)
             } catch let error as NSError {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
-                let contextError = ErrorWithContext(error: resError, context: #function)
+                let contextError = ErrorWithContext(error: resError, context: "JsonTools.jsonStream")
                 return .Failure(contextError)
             } catch {
-                let contextError = ErrorWithContext(error: JsonParserError(description: "JsonTools.jsonStream: unexpected system state"), context: #function)
+                let contextError = ErrorWithContext(error: JsonParserError(description: "JsonTools.jsonStream: unexpected system state"), context: "JsonTools.jsonStream unexpected system state")
                 return .Failure(contextError)
             }
         }
