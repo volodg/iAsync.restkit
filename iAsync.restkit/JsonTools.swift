@@ -17,7 +17,6 @@ public class JsonParserError : UtilsError {}
 
 public extension AsyncStreamType where Self.Value == NSData, Self.Error == ErrorWithContext {
 
-    @warn_unused_result
     func toJson() -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
 
         let stream = self.mapNext2AnyObject()
@@ -27,7 +26,6 @@ public extension AsyncStreamType where Self.Value == NSData, Self.Error == Error
 
 public struct JsonTools {
 
-    @warn_unused_result
     public static func jsonStream(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
 
         return asyncStreamWithJob { progress -> Result<AnyObject, ErrorWithContext> in

@@ -51,7 +51,6 @@ final public class SmartDataStreamFields<Result, DataLoadContext> {
     }
 }
 
-@warn_unused_result
 public func jSmartDataStreamWithCache<Result, DataLoadContext>(args: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, ErrorWithContext> {
 
     let dataStream      = args.dataStream
@@ -138,7 +137,6 @@ final internal class ErrorNoFreshData : UtilsError {
     }
 }
 
-@warn_unused_result
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
     cachedDataSteam: AsyncStream<(date: NSDate, data: NSData), AnyObject, ErrorWithContext>,
     strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, NSData), AnyObject, ErrorWithContext> {
