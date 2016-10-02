@@ -15,7 +15,7 @@ import enum ReactiveKit.Result
 
 public class JsonParserError : UtilsError {}
 
-public extension AsyncStreamType where Self.Value == NSData, Self.Error == ErrorWithContext {
+public extension AsyncStream where Self.Value == NSData, Self.Error == ErrorWithContext {
 
     func toJson() -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
 
@@ -32,14 +32,14 @@ public struct JsonTools {
 
             do {
                 let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
-                return .Success(jsonObj)
+                return .success(jsonObj)
             } catch let error as NSError {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
                 let contextError = ErrorWithContext(error: resError, context: #function)
-                return .Failure(contextError)
+                return .failure(contextError)
             } catch {
                 let contextError = ErrorWithContext(error: JsonParserError(description: "JsonTools.jsonStream: unexpected system state"), context: #function)
-                return .Failure(contextError)
+                return .failure(contextError)
             }
         }
     }

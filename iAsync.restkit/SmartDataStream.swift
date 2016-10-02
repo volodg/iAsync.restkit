@@ -147,20 +147,20 @@ private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
 
         switch strategy {
         case .NetworkFirst:
-            return .Success(cachedResult)
+            return .success(cachedResult)
         case .CacheFirst(let ttl):
-            guard let ttl = ttl else { return .Success(cachedResult) }
+            guard let ttl = ttl else { return .success(cachedResult) }
 
             let newDate = cachedData.0.dateByAddingTimeInterval(ttl)
             if newDate.compare(NSDate()) == .OrderedDescending {
 
                 let cachedResult = (DataRequestContext<DataLoadContext>.CacheUpdateDate(cachedData.0), cachedData.1)
-                return .Success(cachedResult)
+                return .success(cachedResult)
             }
 
             let error = ErrorNoFreshData(cachedData: cachedData)
             let contextError = ErrorWithContext(error: error, context: #function)
-            return .Failure(contextError)
+            return .failure(contextError)
         }
     }
 
