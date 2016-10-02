@@ -13,11 +13,11 @@ import iAsync_reactiveKit
 
 import enum ReactiveKit.Result
 
-public class JsonParserError : UtilsError {}
+open class JsonParserError : UtilsError {}
 
-public extension AsyncStream where Self.Value == NSData, Self.Error == ErrorWithContext {
+public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContext {
 
-    func toJson() -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
+    func toJson() -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
         let stream = self.mapNext2AnyObject()
         return stream.flatMap { JsonTools.jsonStream($0) }
@@ -26,12 +26,12 @@ public extension AsyncStream where Self.Value == NSData, Self.Error == ErrorWith
 
 public struct JsonTools {
 
-    public static func jsonStream(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
+    public static func jsonStream(_ data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
-        return asyncStreamWithJob { progress -> Result<AnyObject, ErrorWithContext> in
+        return asyncStreamWithJob { progress -> Result<Any, ErrorWithContext> in
 
             do {
-                let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
+                let jsonObj = try JSONSerialization.jsonObject(with: data as Data, options: [.allowFragments])
                 return .success(jsonObj)
             } catch let error as NSError {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")

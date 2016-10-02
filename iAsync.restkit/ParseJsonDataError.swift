@@ -12,12 +12,12 @@ import iAsync_utils
 
 final public class ParseJsonDataError : UtilsError {
 
-    let data     : NSData
+    let data     : Data
     let jsonError: NSError
     let context  : CustomStringConvertible
 
     required public init(
-        data     : NSData,
+        data     : Data,
         jsonError: NSError,
         context  : CustomStringConvertible) {
 
