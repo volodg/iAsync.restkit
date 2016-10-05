@@ -13,7 +13,7 @@ import iAsync_reactiveKit
 
 import enum ReactiveKit.Result
 
-open class JsonParserError : UtilsError {}
+public class JsonParserError : UtilsError {}
 
 public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContext {
 
