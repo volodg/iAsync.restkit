@@ -11,14 +11,13 @@ import Foundation
 import iAsync_utils
 import iAsync_reactiveKit
 
-import ReactiveKit_old
+import enum ReactiveKit.Result
 
 public class JsonParserError : UtilsError {}
 
-public extension AsyncStreamType where Self.Value == NSData, Self.Error == ErrorWithContext {
+public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContext {
 
-    @warn_unused_result
-    func toJson() -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
+    func toJson() -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
         let stream = self.mapNext2AnyObject()
         return stream.flatMap { JsonTools.jsonStream($0) }
@@ -27,21 +26,20 @@ public extension AsyncStreamType where Self.Value == NSData, Self.Error == Error
 
 public struct JsonTools {
 
-    @warn_unused_result
-    public static func jsonStream(data: NSData, context: CustomStringConvertible? = nil) -> AsyncStream<AnyObject, AnyObject, ErrorWithContext> {
+    public static func jsonStream(_ data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
-        return asyncStreamWithJob { progress -> Result<AnyObject, ErrorWithContext> in
+        return asyncStreamWithJob { progress -> Result<Any, ErrorWithContext> in
 
             do {
-                let jsonObj = try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
-                return .Success(jsonObj)
+                let jsonObj = try JSONSerialization.jsonObject(with: data as Data, options: [.allowFragments])
+                return .success(jsonObj)
             } catch let error as NSError {
                 let resError = ParseJsonDataError(data: data, jsonError: error, context: context ?? "")
                 let contextError = ErrorWithContext(error: resError, context: #function)
-                return .Failure(contextError)
+                return .failure(contextError)
             } catch {
                 let contextError = ErrorWithContext(error: JsonParserError(description: "JsonTools.jsonStream: unexpected system state"), context: #function)
-                return .Failure(contextError)
+                return .failure(contextError)
             }
         }
     }
