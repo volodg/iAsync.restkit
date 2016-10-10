@@ -50,18 +50,18 @@ final public class SmartDataStreamFields<Result, DataLoadContext> {
     }
 }
 
-public func jSmartDataStreamWithCache<Result, DataLoadContext>(_ args: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, ErrorWithContext> {
+public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, ErrorWithContext> {
 
-    let dataStream      = args.dataStream
-    let analyzerForData = args.analyzerForData
-    let cache           = args.cache
-    let cacheKey        = args.cacheKey
-    let strategy        = args.strategy
+    let dataStream      = cacheArgs.dataStream
+    let analyzerForData = cacheArgs.analyzerForData
+    let cache           = cacheArgs.cache
+    let cacheKey        = cacheArgs.cacheKey
+    let strategy        = cacheArgs.strategy
 
     let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, Data), AnyObject, ErrorWithContext> =
-        loadFreshCachedDataWithUpdateDate(cache.cachedDataStreamForKey(cacheKey), strategy: strategy)
+        loadFreshCachedDataWithUpdateDate(cache.cachedDataStreamFor(key: cacheKey), strategy: strategy)
 
-    switch args.strategy {
+    switch cacheArgs.strategy {
     case .networkFirst:
         return dataStream.flatMap { contextData -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
@@ -70,7 +70,7 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(_ args: SmartData
 
             return analyzerForData(DataRequestContext.outside(context), data).flatMap { result -> AsyncStream<Result, AnyObject, ErrorWithContext> in
 
-                let stream = cache.loaderToSetData(data, forKey:cacheKey)
+                let stream = cache.loaderToSet(data: data, forKey:cacheKey)
                 return stream.map { result }
             }
         }.flatMapError { error -> AsyncStream<Result, AnyObject, ErrorWithContext> in
@@ -99,7 +99,7 @@ public func jSmartDataStreamWithCache<Result, DataLoadContext>(_ args: SmartData
 
                 switch response.0 {
                 case .outside:
-                    let stream = cache.loaderToSetData(response.1, forKey:cacheKey)
+                    let stream = cache.loaderToSet(data: response.1, forKey:cacheKey)
                     return stream.map { analyzedData }
                 case .cacheUpdateDate:
                     return AsyncStream.succeeded(with: analyzedData)

@@ -13,7 +13,7 @@ import struct iAsync_utils.ErrorWithContext
 
 public protocol AsyncRestKitCache {
 
-    func loaderToSetData(_ data: Data, forKey key: String) -> AsyncStream<Void, AnyObject, ErrorWithContext>
+    func loaderToSet(data: Data, forKey key: String) -> AsyncStream<Void, AnyObject, ErrorWithContext>
 
-    func cachedDataStreamForKey(_ key: String) -> AsyncStream<(date: Date, data: Data), AnyObject, ErrorWithContext>
+    func cachedDataStreamFor(key: String) -> AsyncStream<(date: Date, data: Data), AnyObject, ErrorWithContext>
 }
