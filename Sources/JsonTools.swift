@@ -26,6 +26,7 @@ public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContex
 
 public struct JsonTools {
 
+    //todo rename?
     public static func jsonStream(_ data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
         return asyncStreamWithJob { progress -> Result<Any, ErrorWithContext> in
