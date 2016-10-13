@@ -125,18 +125,10 @@ final internal class ErrorNoFreshData : UtilsError {
 
     let cachedData: (date: Date, data: Data)
 
-    override class func iAsyncErrorsDomain() -> String {
-        return "com.just_for_fun.rest_kit_internal.library"
-    }
-
     required init(cachedData: (date: Date, data: Data)) {
 
         self.cachedData = cachedData
         super.init(description: "internal logic error (no fresh data)")
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 

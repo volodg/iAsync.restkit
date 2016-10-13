@@ -27,11 +27,7 @@ final public class ParseJsonDataError : UtilsError {
         super.init(description: "ParseJsonDataError")
     }
 
-    required public init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override public var localizedDescription: String {
+    open override var localizedDescription: String {
         return "ParseJsonDataError: Parse Json Error: \(jsonError) response: \(data.toString()) context:\(context)"
     }
 }
