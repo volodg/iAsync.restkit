@@ -30,4 +30,9 @@ final public class ParseJsonDataError : UtilsError {
     open override var localizedDescription: String {
         return "ParseJsonDataError: Parse Json Error: \(jsonError) response: \(data.toString()) context:\(context)"
     }
+
+    override open var canRepeatError: Bool {
+
+        return true
+    }
 }

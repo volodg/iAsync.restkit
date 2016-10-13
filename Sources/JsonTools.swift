@@ -13,7 +13,13 @@ import iAsync_reactiveKit
 
 import enum ReactiveKit.Result
 
-public class JsonParserError : UtilsError {}
+public class JsonParserError : UtilsError {
+
+    override open var canRepeatError: Bool {
+
+        return true
+    }
+}
 
 public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContext {
 
