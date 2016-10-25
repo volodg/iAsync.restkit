@@ -23,7 +23,7 @@ public class JsonParserError : UtilsError {
 
 public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContext {
 
-    func toJson() -> AsyncStream<Any, AnyObject, ErrorWithContext> {
+    func toJson() -> AsyncStream<Any, Any, ErrorWithContext> {
 
         let stream = self.mapNext2AnyObject()
         return stream.flatMap { JsonTools.jsonStream(forData: $0) }
@@ -32,7 +32,7 @@ public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContex
 
 public struct JsonTools {
 
-    public static func jsonStream(forData data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, AnyObject, ErrorWithContext> {
+    public static func jsonStream(forData data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, Any, ErrorWithContext> {
 
         return asyncStreamWithJob { progress -> Result<Any, ErrorWithContext> in
 

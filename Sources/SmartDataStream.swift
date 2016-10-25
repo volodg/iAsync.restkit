@@ -27,16 +27,16 @@ public enum CacheStrategy {
 
 final public class SmartDataStreamFields<Result, DataLoadContext> {
 
-    public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, Data) -> AsyncStream<Result, AnyObject, ErrorWithContext>
+    public typealias AnalyzerType = (DataRequestContext<DataLoadContext>, Data) -> AsyncStream<Result, Any, ErrorWithContext>
 
-    let dataStream     : AsyncStream<(DataLoadContext, Data), AnyObject, ErrorWithContext>
+    let dataStream     : AsyncStream<(DataLoadContext, Data), Any, ErrorWithContext>
     let analyzerForData: AnalyzerType
     let cacheKey       : String
     let cache          : AsyncRestKitCache
     let strategy       : CacheStrategy
 
     public init(
-        dataStream     : AsyncStream<(DataLoadContext, Data), AnyObject, ErrorWithContext>,
+        dataStream     : AsyncStream<(DataLoadContext, Data), Any, ErrorWithContext>,
         analyzerForData: @escaping AnalyzerType,
         cacheKey       : String,
         cache          : AsyncRestKitCache,
@@ -50,7 +50,7 @@ final public class SmartDataStreamFields<Result, DataLoadContext> {
     }
 }
 
-public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, AnyObject, ErrorWithContext> {
+public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataStreamFields<Result, DataLoadContext>) -> AsyncStream<Result, Any, ErrorWithContext> {
 
     let dataStream      = cacheArgs.dataStream
     let analyzerForData = cacheArgs.analyzerForData
@@ -58,30 +58,30 @@ public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataSt
     let cacheKey        = cacheArgs.cacheKey
     let strategy        = cacheArgs.strategy
 
-    let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, Data), AnyObject, ErrorWithContext> =
+    let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext> =
         loadFreshCachedDataWithUpdateDate(cache.cachedDataStreamFor(key: cacheKey), strategy: strategy)
 
     switch cacheArgs.strategy {
     case .networkFirst:
-        return dataStream.flatMap { contextData -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+        return dataStream.flatMap { contextData -> AsyncStream<Result, Any, ErrorWithContext> in
 
             let context = contextData.0
             let data    = contextData.1
 
-            return analyzerForData(DataRequestContext.outside(context), data).flatMap { result -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+            return analyzerForData(DataRequestContext.outside(context), data).flatMap { result -> AsyncStream<Result, Any, ErrorWithContext> in
 
                 let stream = cache.loaderToSet(data: data, forKey:cacheKey)
                 return stream.map { result }
             }
-        }.flatMapError { error -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+        }.flatMapError { error -> AsyncStream<Result, Any, ErrorWithContext> in
             return cachedDataStream.flatMap(analyzerForData).mapError { _ in error }
         }
     case .cacheFirst:
 
-        typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, Data), AnyObject, ErrorWithContext>
+        typealias StreamTT = AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext>
         let cachedDataStream: StreamTT = AsyncStream { observer in
 
-            return cachedDataStream.flatMapError { _ -> AsyncStream<(DataRequestContext<DataLoadContext>, Data), AnyObject, ErrorWithContext> in
+            return cachedDataStream.flatMapError { _ -> AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext> in
 
                 return dataStream.map { value -> (DataRequestContext<DataLoadContext>, Data) in
 
@@ -91,11 +91,11 @@ public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataSt
             }.observe(observer)
         }
 
-        let analyzer = { (response: (DataRequestContext<DataLoadContext>, Data)) -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+        let analyzer = { (response: (DataRequestContext<DataLoadContext>, Data)) -> AsyncStream<Result, Any, ErrorWithContext> in
 
             let analyzer = analyzerForData(response.0, response.1)
 
-            let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+            let stream = analyzer.flatMap { analyzedData -> AsyncStream<Result, Any, ErrorWithContext> in
 
                 switch response.0 {
                 case .outside:
@@ -106,7 +106,7 @@ public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataSt
                 }
             }
 
-            return stream.flatMapError { error -> AsyncStream<Result, AnyObject, ErrorWithContext> in
+            return stream.flatMapError { error -> AsyncStream<Result, Any, ErrorWithContext> in
 
                 switch response.0 {
                 case .outside:
@@ -132,9 +132,10 @@ final internal class ErrorNoFreshData : UtilsError {
     }
 }
 
+//todo rename?
 private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
-    _ cachedDataSteam: AsyncStream<(date: Date, data: Data), AnyObject, ErrorWithContext>,
-    strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, Data), AnyObject, ErrorWithContext> {
+    _ cachedDataSteam: AsyncStream<(date: Date, data: Data), Any, ErrorWithContext>,
+    strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext> {
 
     let validateByDateResultBinder = { (cachedData: (date: Date, data: Data)) -> Result<(DataRequestContext<DataLoadContext>, Data), ErrorWithContext> in
 
