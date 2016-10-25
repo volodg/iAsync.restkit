@@ -26,14 +26,13 @@ public extension AsyncStreamType where ValueT == Data, ErrorT == ErrorWithContex
     func toJson() -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
         let stream = self.mapNext2AnyObject()
-        return stream.flatMap { JsonTools.jsonStream($0) }
+        return stream.flatMap { JsonTools.jsonStream(forData: $0) }
     }
 }
 
 public struct JsonTools {
 
-    //todo rename?
-    public static func jsonStream(_ data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, AnyObject, ErrorWithContext> {
+    public static func jsonStream(forData data: Data, context: CustomStringConvertible? = nil) -> AsyncStream<Any, AnyObject, ErrorWithContext> {
 
         return asyncStreamWithJob { progress -> Result<Any, ErrorWithContext> in
 
