@@ -59,7 +59,7 @@ public func jSmartDataStreamWith<Result, DataLoadContext>(cacheArgs: SmartDataSt
     let strategy        = cacheArgs.strategy
 
     let cachedDataStream: AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext> =
-        loadFreshCachedDataWithUpdateDate(cache.cachedDataStreamFor(key: cacheKey), strategy: strategy)
+        freshCachedData(from: cache.cachedDataStreamFor(key: cacheKey), strategy: strategy)
 
     switch cacheArgs.strategy {
     case .networkFirst:
@@ -132,10 +132,9 @@ final internal class ErrorNoFreshData : UtilsError {
     }
 }
 
-//todo rename?
-private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
-    _ cachedDataSteam: AsyncStream<(date: Date, data: Data), Any, ErrorWithContext>,
-    strategy       : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext> {
+private func freshCachedData<DataLoadContext>(
+    from steam: AsyncStream<(date: Date, data: Data), Any, ErrorWithContext>,
+    strategy  : CacheStrategy) -> AsyncStream<(DataRequestContext<DataLoadContext>, Data), Any, ErrorWithContext> {
 
     let validateByDateResultBinder = { (cachedData: (date: Date, data: Data)) -> Result<(DataRequestContext<DataLoadContext>, Data), ErrorWithContext> in
 
@@ -160,5 +159,5 @@ private func loadFreshCachedDataWithUpdateDate<DataLoadContext>(
         }
     }
 
-    return cachedDataSteam.tryMap(validateByDateResultBinder)
+    return steam.tryMap(validateByDateResultBinder)
 }
