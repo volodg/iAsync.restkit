@@ -1,7 +1,7 @@
 //
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2015 Srdan Rasic (@srdanrasic)
+//  Copyright (c) 2016 Srdan Rasic (@srdanrasic)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,31 @@
 //  THE SOFTWARE.
 //
 
-/// A disposable that disposes other disposable.
-public final class SerialDisposable: DisposableType {
-  
-  public private(set) var isDisposed: Bool = false
-  private let lock = RecursiveLock(name: "com.ReactiveKit.ReactiveKit.SerialDisposable")
-  
-  /// Will dispose other disposable immediately if self is already disposed.
-  public var otherDisposable: DisposableType? {
-    didSet {
-      lock.lock()
-      if isDisposed {
-        otherDisposable?.dispose()
-      }
-      lock.unlock()
-    }
+import Foundation
+
+/// A Signal represents a stream of elements.
+public struct Signal<Element, Error: Swift.Error>: SignalProtocol {
+
+  public typealias Producer = (AtomicObserver<Element, Error>) -> Disposable
+  private let producer: Producer
+
+  /// Create new signal given a producer closure.
+  public init(producer: @escaping Producer) {
+    self.producer = producer
   }
-  
-  public init(otherDisposable: DisposableType?) {
-    self.otherDisposable = otherDisposable
+
+  /// Register the observer that will receive events from the signal.
+  public func observe(with observer: @escaping (Event<Element, Error>) -> Void) -> Disposable {
+    let serialDisposable = SerialDisposable(otherDisposable: nil)
+    let observer = AtomicObserver(disposable: serialDisposable, observer: observer)
+    serialDisposable.otherDisposable = producer(observer)
+    return serialDisposable
   }
-  
-  public func dispose() {
-    lock.lock()
-    if !isDisposed {
-      isDisposed = true
-      otherDisposable?.dispose()
-    }
-    lock.unlock()
+
+  public func toSignal() -> Signal<Element, Error> {
+    return self
   }
 }
+
+/// A convenience alias for non-failable signals.
+public typealias Signal1<Element> = Signal<Element, NoError>

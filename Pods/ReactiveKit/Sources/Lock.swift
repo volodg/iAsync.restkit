@@ -1,7 +1,7 @@
 //
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2015 Srdan Rasic (@srdanrasic)
+//  Copyright (c) 2016 Srdan Rasic (@srdanrasic)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,43 +22,36 @@
 //  THE SOFTWARE.
 //
 
-/// A disposable that disposes a collection of disposables upon disposing.
-public final class CompositeDisposable: DisposableType {
-  
-  public private(set) var isDisposed: Bool = false
-  private var disposables: [DisposableType] = []
-  private let lock = RecursiveLock(name: "com.ReactiveKit.ReactiveKit.CompositeDisposable")
-  
-  public convenience init() {
-    self.init([])
-  }
-  
-  public init(_ disposables: [DisposableType]) {
-    self.disposables = disposables
-  }
-  
-  public func addDisposable(disposable: DisposableType) {
-    lock.lock()
-    if isDisposed {
-      disposable.dispose()
-    } else {
-      disposables.append(disposable)
-      self.disposables = disposables.filter { $0.isDisposed == false }
-    }
-    lock.unlock()
-  }
-  
-  public func dispose() {
-    lock.lock()
-    isDisposed = true
-    for disposable in disposables {
-      disposable.dispose()
-    }
-    disposables = []
-    lock.unlock()
+import Foundation
+
+/// Common lock interface.
+public protocol Lock {
+  func lock()
+  func unlock()
+}
+
+public extension Lock {
+
+  public func atomic<T>(body: () -> T) -> T {
+    lock(); defer { unlock() }
+    return body()
   }
 }
 
-public func += (left: CompositeDisposable, right: DisposableType) {
-  left.addDisposable(right)
+/// Lock
+extension NSLock: Lock {
+
+  public convenience init(name: String) {
+    self.init()
+    self.name = name
+  }
+}
+
+/// Recursive Lock
+extension NSRecursiveLock: Lock {
+
+  public convenience init(name: String) {
+    self.init()
+    self.name = name
+  }
 }

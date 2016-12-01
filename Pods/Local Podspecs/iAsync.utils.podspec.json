@@ -19,10 +19,10 @@
     "git": "https://github.com/volodg/iAsync.utils.git",
     "tag": "0.0.3"
   },
-  "source_files": "iAsync.utils/**/*.{swift}",
+  "source_files": "Sources/**/*.{swift}",
   "dependencies": {
     "ReactiveKit": [
-      "~> 1.1.3"
+
     ]
   }
 }

@@ -1,7 +1,7 @@
 //
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2015 Srdan Rasic (@srdanrasic)
+//  Copyright (c) 2016 Srdan Rasic (@srdanrasic)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,38 +22,25 @@
 //  THE SOFTWARE.
 //
 
-public struct Stream<Event>: StreamType {
-  
-  public typealias Observer = Event -> ()
-  
-  public let producer: Observer -> DisposableType?
-  
-  public init(producer: Observer -> DisposableType?) {
-    self.producer = producer
-  }
-  
-  public func observe(on context: ExecutionContext? = ImmediateOnMainExecutionContext, observer: Observer) -> DisposableType {
-    let serialDisposable = SerialDisposable(otherDisposable: nil)
-    if let context = context {
-      serialDisposable.otherDisposable = producer { event in
-        if !serialDisposable.isDisposed {
-          context {
-            observer(event)
-          }
-        }
-      }
-    } else {
-      serialDisposable.otherDisposable = producer { event in
-        if !serialDisposable.isDisposed {
-          observer(event)
-        }
-      }
-    }
-    return serialDisposable
+public protocol OptionalProtocol {
+  associatedtype Wrapped
+  var _unbox: Optional<Wrapped> { get }
+  init(nilLiteral: ())
+  init(_ some: Wrapped)
+}
+
+extension Optional: OptionalProtocol {
+  public var _unbox: Optional<Wrapped> {
+    return self
   }
 }
 
-@warn_unused_result
-public func create<Event>(producer producer: (Event -> ()) -> DisposableType?) -> Stream<Event> {
-  return Stream<Event>(producer: producer)
+func ==<O: OptionalProtocol>(lhs: O, rhs: O) -> Bool
+  where O.Wrapped: Equatable {
+    return lhs._unbox == rhs._unbox
+}
+
+func !=<O: OptionalProtocol>(lhs: O, rhs: O) -> Bool
+  where O.Wrapped: Equatable {
+    return !(lhs == rhs)
 }

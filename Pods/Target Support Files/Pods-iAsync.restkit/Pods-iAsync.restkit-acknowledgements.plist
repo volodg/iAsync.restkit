@@ -37,6 +37,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 </string>
+			<key>License</key>
+			<string>MIT</string>
 			<key>Title</key>
 			<string>ReactiveKit</string>
 			<key>Type</key>
@@ -719,6 +721,8 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;http://www.gnu.org/philosophy/why-not-lgpl.html&gt;.
 </string>
+			<key>License</key>
+			<string>MIT</string>
 			<key>Title</key>
 			<string>iAsync.reactiveKit</string>
 			<key>Type</key>
@@ -748,6 +752,8 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
+			<key>License</key>
+			<string>MIT</string>
 			<key>Title</key>
 			<string>iAsync.utils</string>
 			<key>Type</key>

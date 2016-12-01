@@ -1,7 +1,7 @@
 //
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2015 Srdan Rasic (@srdanrasic)
+//  Copyright (c) 2016 Srdan Rasic (@srdanrasic)
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,5 +22,22 @@
 //  THE SOFTWARE.
 //
 
-public enum NoError: ErrorType {
+/// Represents an event of a Signal.
+public enum Event<Element, Error: Swift.Error> {
+  case next(Element)
+  case failed(Error)
+  case completed
+}
+
+extension Event {
+
+  /// Return `true` in case of `.failure` or `.completed` event.
+  public var isTerminal: Bool {
+    switch self {
+    case .next:
+      return false
+    default:
+      return true
+    }
+  }
 }
